@@ -22,7 +22,7 @@ run_phase() {
             # Extract the progress and project name
             progress=$(echo "$line" | grep -oE "\[[0-9]+/[0-9]+\]")
             project=$(echo "$line" | grep -oE "[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$" || echo "")
-            printf "\r  Project %s: %s                    " "$progress" "$project"
+            printf "\r  Phase %s — Project %s: %s                    " "$phase" "$progress" "$project"
         fi
         # Show phase completion summary
         if echo "$line" | grep -qE "Phase .* complete|Results written|ERROR"; then
