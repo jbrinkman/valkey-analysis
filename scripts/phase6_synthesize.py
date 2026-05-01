@@ -33,6 +33,7 @@ def load_phase_data() -> dict:
     for phase, filename in [
         ("phase1", "phase1_results.json"),
         ("phase2", "phase2_results.json"),
+        ("phase2b", "phase2b_results.json"),
         ("phase3", "phase3_results.json"),
         ("phase4", "phase4_results.json"),
         ("phase5", "phase5_results.json"),
@@ -83,6 +84,7 @@ def classify_valkey_support(phases: dict) -> str:
     """Classify valkey_support as explicit, implied, or none."""
     p1 = phases.get("phase1", {})
     p2 = phases.get("phase2", {})
+    p2b = phases.get("phase2b", {})
     p3 = phases.get("phase3", {})
     p4 = phases.get("phase4", {})
     p5 = phases.get("phase5", {})
@@ -93,13 +95,14 @@ def classify_valkey_support(phases: dict) -> str:
     if p3.get("has_valkey_code"):
         return "explicit"
     if p2.get("has_valkey_signal"):
-        # Check it's actual Valkey mentions, not just keyword noise
         valkey_mentions = p2.get("valkey_mentions", [])
         if any(m.get("count", 0) >= 2 for m in valkey_mentions):
             return "explicit"
         if valkey_mentions:
             return "explicit"
     if p2.get("docs_valkey_mentions"):
+        return "explicit"
+    if p2b.get("has_valkey_signal"):
         return "explicit"
     if p4.get("has_valkey_issues_prs"):
         # Issues/PRs about Valkey suggest active work — but check if merged/closed
@@ -113,8 +116,11 @@ def classify_valkey_support(phases: dict) -> str:
     # Implied: Redis dependency with compatible use case
     # BUT: if the project depends on Redis modules with no Valkey equivalent,
     # it won't work with Valkey, so disqualify implied support
-    has_redis_signal = p1.get("redis_deps") or p2.get("has_redis_signal") or p5.get("has_redis_extension")
-    if has_redis_signal:
+    # NOTE: DeepWiki (phase2b) alone is not sufficient for implied — it can mention
+    # Redis for stub/unfinished implementations. Require corroboration from deps or docs.
+    has_strong_redis_signal = p1.get("redis_deps") or p2.get("has_redis_signal") or p5.get("has_redis_extension")
+    has_deepwiki_redis = p2b.get("has_redis_signal")
+    if has_strong_redis_signal or (has_deepwiki_redis and (p1.get("redis_deps") or p2.get("has_redis_signal"))):
         modules_used = detect_redis_modules(phases)
         incompatible = [m for m in modules_used if m in VALKEY_INCOMPATIBLE_MODULES]
         if incompatible:
@@ -162,10 +168,13 @@ def detect_valkey_glide(phases: dict) -> bool:
 def detect_redisearch_usage(phases: dict) -> bool:
     """Check if RediSearch is used."""
     p2 = phases.get("phase2", {})
+    p2b = phases.get("phase2b", {})
     p3 = phases.get("phase3", {})
 
     modules = p2.get("redis_module_mentions", {})
     if "redisearch" in modules:
+        return True
+    if "redisearch" in p2b.get("redis_module_mentions", {}):
         return True
     if p3.get("redis_module_code_hits", {}).get("redisearch"):
         return True
@@ -176,10 +185,13 @@ def detect_redis_modules(phases: dict) -> list[str]:
     """Detect which Redis modules are used."""
     modules_found = set()
     p2 = phases.get("phase2", {})
+    p2b = phases.get("phase2b", {})
     p3 = phases.get("phase3", {})
 
     for module in REDIS_MODULE_KEYWORDS:
         if module in p2.get("redis_module_mentions", {}):
+            modules_found.add(module)
+        if module in p2b.get("redis_module_mentions", {}):
             modules_found.add(module)
         if module in p3.get("redis_module_code_hits", {}):
             modules_found.add(module)
@@ -348,7 +360,7 @@ def build_evidence_summary(valkey_support: str, valkey_search_support: str,
     return " ".join(parts)
 
 
-def generate_markdown_report(repo_key: str, result: dict, phases: dict, deepwiki_content: str | None) -> str:
+def generate_markdown_report(repo_key: str, result: dict, phases: dict, deepwiki_available: bool) -> str:
     """Generate a detailed markdown evidence report for a single repo."""
     owner, repo_name = repo_key.split("/")
     lines = [
@@ -475,13 +487,32 @@ def generate_markdown_report(repo_key: str, result: dict, phases: dict, deepwiki
         lines.append("")
 
     # DeepWiki
-    if deepwiki_content:
+    p2b = phases.get("phase2b", {})
+    if p2b.get("deepwiki_available"):
         lines.extend([
-            "## DeepWiki Summary",
-            "",
-            "DeepWiki content was retrieved and used in analysis.",
+            "## DeepWiki Analysis",
             "",
         ])
+        if p2b.get("valkey_mentions"):
+            lines.append("**Valkey mentions:**")
+            for m in p2b["valkey_mentions"]:
+                lines.append(f"- `{m['keyword']}` ({m['count']} occurrences)")
+                for ctx in m.get("contexts", []):
+                    lines.append(f"  - `{ctx['text']}`")
+            lines.append("")
+        if p2b.get("redis_mentions"):
+            lines.append(f"**Redis mentions:** {len(p2b['redis_mentions'])} keyword(s) found")
+            for m in p2b["redis_mentions"][:5]:
+                lines.append(f"- `{m['keyword']}` ({m['count']} occurrences)")
+            lines.append("")
+        if p2b.get("redis_module_mentions"):
+            lines.append(f"**Redis module mentions:** {list(p2b['redis_module_mentions'].keys())}")
+            lines.append("")
+        if not p2b.get("valkey_mentions") and not p2b.get("redis_mentions"):
+            lines.append("No Valkey or Redis mentions found in DeepWiki content.")
+            lines.append("")
+    else:
+        lines.extend(["## DeepWiki Analysis", "", "DeepWiki content not available for this repo.", ""])
 
     return "\n".join(lines)
 
@@ -491,20 +522,8 @@ async def synthesize_repo(client: httpx.AsyncClient, repo_key: str, phases: dict
     owner, repo_name = repo_key.split("/")
     meta = metadata.get(repo_key, {})
 
-    # Fetch DeepWiki for repos with signals
-    has_any_signal = (
-        phases.get("phase1", {}).get("triage", "no_dep_signal") != "no_dep_signal"
-        or phases.get("phase2", {}).get("has_valkey_signal")
-        or phases.get("phase2", {}).get("has_redis_signal")
-        or phases.get("phase3", {}).get("has_valkey_code")
-        or phases.get("phase4", {}).get("has_valkey_issues_prs")
-        or phases.get("phase5", {}).get("has_valkey_extension")
-        or phases.get("phase5", {}).get("has_redis_extension")
-    )
-
-    deepwiki_content = None
-    if has_any_signal:
-        deepwiki_content = await fetch_deepwiki(client, owner, repo_name)
+    # DeepWiki data is now collected in Phase 2b — check if it was available
+    deepwiki_available = phases.get("phase2b", {}).get("deepwiki_available", False)
 
     # Classify
     valkey_support = classify_valkey_support(phases)
@@ -542,7 +561,7 @@ async def synthesize_repo(client: httpx.AsyncClient, repo_key: str, phases: dict
     }
 
     # Generate markdown report
-    report = generate_markdown_report(repo_key, result, phases, deepwiki_content)
+    report = generate_markdown_report(repo_key, result, phases, deepwiki_available)
     (REPORTS_DIR / report_filename).write_text(report)
 
     return result

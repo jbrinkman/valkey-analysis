@@ -146,7 +146,7 @@ async def analyze_repo(client: httpx.AsyncClient, owner: str, repo: str, last_re
     return result
 
 
-def select_repos_for_search(phase1_path: str | None, phase2_path: str | None) -> list[dict]:
+def select_repos_for_search(phase1_path: str | None, phase2_path: str | None, phase2b_path: str | None = None) -> list[dict]:
     """Select repos to search based on prior phase signals. Returns list of {owner, repo_name}."""
     repos_to_search = {}
 
@@ -166,6 +166,14 @@ def select_repos_for_search(phase1_path: str | None, phase2_path: str | None) ->
                 key = f"{r['owner']}/{r['repo_name']}"
                 repos_to_search[key] = {"owner": r["owner"], "repo_name": r["repo_name"]}
 
+    # All repos with any signal from Phase 2b (DeepWiki)
+    if phase2b_path:
+        p2b = json.loads(phase2b_path)
+        for r in p2b:
+            if r.get("has_valkey_signal") or r.get("has_redis_signal"):
+                key = f"{r['owner']}/{r['repo_name']}"
+                repos_to_search[key] = {"owner": r["owner"], "repo_name": r["repo_name"]}
+
     return list(repos_to_search.values())
 
 
@@ -174,14 +182,16 @@ async def main(repo_filter: list[str] | None = None):
     # Load prior phase results to determine scope
     p1_file = DATA_DIR / "phase1_results.json"
     p2_file = DATA_DIR / "phase2_results.json"
+    p2b_file = DATA_DIR / "phase2b_results.json"
 
     p1_data = p1_file.read_text() if p1_file.exists() else None
     p2_data = p2_file.read_text() if p2_file.exists() else None
+    p2b_data = p2b_file.read_text() if p2b_file.exists() else None
 
     if repo_filter:
         repos = [{"owner": r.split("/")[0], "repo_name": r.split("/")[1]} for r in repo_filter]
-    elif p1_data or p2_data:
-        repos = select_repos_for_search(p1_data, p2_data)
+    elif p1_data or p2_data or p2b_data:
+        repos = select_repos_for_search(p1_data, p2_data, p2b_data)
     else:
         log.error("No prior phase results found and no repo filter specified")
         sys.exit(1)

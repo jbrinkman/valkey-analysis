@@ -232,7 +232,7 @@ def select_repos(repo_filter: list[str] | None) -> list[dict]:
 
     # Prioritize repos with signals from earlier phases, but include all
     signaled = set()
-    for phase_file in ["phase1_results.json", "phase2_results.json", "phase3_results.json"]:
+    for phase_file in ["phase1_results.json", "phase2_results.json", "phase2b_results.json", "phase3_results.json"]:
         path = DATA_DIR / phase_file
         if not path.exists():
             continue
@@ -241,7 +241,7 @@ def select_repos(repo_filter: list[str] | None) -> list[dict]:
             key = f"{r['owner']}/{r['repo_name']}"
             if phase_file == "phase1_results.json" and r.get("triage") != "no_dep_signal":
                 signaled.add(key)
-            elif phase_file == "phase2_results.json" and (r.get("has_valkey_signal") or r.get("has_redis_signal")):
+            elif phase_file in ("phase2_results.json", "phase2b_results.json") and (r.get("has_valkey_signal") or r.get("has_redis_signal")):
                 signaled.add(key)
             elif phase_file == "phase3_results.json" and (r.get("has_valkey_code") or r.get("has_redis_module_code")):
                 signaled.add(key)

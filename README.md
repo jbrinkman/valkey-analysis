@@ -26,10 +26,11 @@ This project scans GitHub repositories for signals of Valkey and Redis integrati
 |-------|--------|-------------|
 | 1 | `phase1_dependencies.py` | Scan package manifests for Valkey/Redis client libraries |
 | 2 | `phase2_documentation.py` | Scan README and docs sites for keyword mentions |
+| 2b | `phase2b_deepwiki.py` | DeepWiki scan for Valkey/Redis integration signals |
 | 3 | `phase3_code_search.py` | GitHub code search for Valkey/Redis references |
 | 4 | `phase4_community_signals.py` | Search issues, PRs, discussions, and wiki |
 | 5 | `phase5_ecosystem.py` | Check org repos for community extensions/plugins |
-| 6 | `phase6_synthesize.py` | Deep dive with DeepWiki + evidence synthesis |
+| 6 | `phase6_synthesize.py` | Evidence synthesis and classification |
 | 7 | `phase7_assemble.py` | Assemble final results.json and per-project reports |
 
 ## Output
