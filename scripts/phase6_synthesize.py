@@ -17,6 +17,7 @@ from config import (
     CONCURRENT_REQUESTS,
     USE_CASES,
     REDIS_MODULE_KEYWORDS,
+    VALKEY_INCOMPATIBLE_MODULES,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -110,9 +111,14 @@ def classify_valkey_support(phases: dict) -> str:
         return "explicit"
 
     # Implied: Redis dependency with compatible use case
-    if p1.get("redis_deps") or p2.get("has_redis_signal"):
-        return "implied"
-    if p5.get("has_redis_extension"):
+    # BUT: if the project depends on Redis modules with no Valkey equivalent,
+    # it won't work with Valkey, so disqualify implied support
+    has_redis_signal = p1.get("redis_deps") or p2.get("has_redis_signal") or p5.get("has_redis_extension")
+    if has_redis_signal:
+        modules_used = detect_redis_modules(phases)
+        incompatible = [m for m in modules_used if m in VALKEY_INCOMPATIBLE_MODULES]
+        if incompatible:
+            return "none"
         return "implied"
 
     return "none"
@@ -303,7 +309,18 @@ def build_evidence_summary(valkey_support: str, valkey_search_support: str,
         if redis_deps:
             parts.append(f"Redis dependencies: {', '.join(redis_deps)}.")
     else:
-        parts.append("No Valkey or Redis integration detected.")
+        # Check if this is a "none" due to incompatible modules
+        modules = detect_redis_modules(phases)
+        incompatible = [m for m in modules if m in VALKEY_INCOMPATIBLE_MODULES]
+        p1 = phases.get("phase1", {})
+        has_redis = p1.get("redis_deps") or phases.get("phase2", {}).get("has_redis_signal")
+        if has_redis and incompatible:
+            parts.append(f"Redis integration detected but uses Valkey-incompatible module(s): {', '.join(incompatible)}.")
+            redis_deps = [d["name"] for d in p1.get("redis_deps", [])]
+            if redis_deps:
+                parts.append(f"Redis dependencies: {', '.join(redis_deps)}.")
+        else:
+            parts.append("No Valkey or Redis integration detected.")
 
     if valkey_glide:
         parts.append("Valkey-Glide client library detected.")

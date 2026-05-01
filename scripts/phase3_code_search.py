@@ -118,12 +118,10 @@ async def analyze_repo(client: httpx.AsyncClient, owner: str, repo: str, last_re
                 "files": hits,
             })
 
-    # Search for Redis module keywords (selective — only non-generic ones)
+    # Search for Redis module keywords including command prefixes (FT., TS., etc.)
     for module, keywords in REDIS_MODULE_KEYWORDS.items():
         module_hits = []
         for kw in keywords:
-            if "." in kw:  # skip command-style keywords like ft.search to reduce queries
-                continue
             query = f'"{kw}" repo:{owner}/{repo}'
             resp = await search_code(client, query, last_request_time)
             if resp and resp.get("total_count", 0) > 0:

@@ -48,25 +48,27 @@ async def search_issues_prs(client: httpx.AsyncClient, owner: str, repo: str, te
     """Search issues and PRs for a keyword using GitHub search API."""
     results = []
     url = f"{GITHUB_API_BASE}/search/issues"
-    params = {"q": f'"{term}" repo:{owner}/{repo}', "per_page": 10, "sort": "updated"}
 
-    data = await github_get(client, url, params)
-    if not data or "items" not in data:
-        return results
+    # GitHub requires is:issue or is:pull-request qualifier
+    for issue_type in ["issue", "pull-request"]:
+        params = {"q": f"{term} repo:{owner}/{repo} is:{issue_type}", "per_page": 10, "sort": "updated"}
+        data = await github_get(client, url, params)
+        if not data or "items" not in data:
+            continue
 
-    for item in data["items"]:
-        is_pr = "pull_request" in item
-        results.append({
-            "type": "pr" if is_pr else "issue",
-            "number": item["number"],
-            "title": item["title"],
-            "state": item["state"],
-            "url": item["html_url"],
-            "created_at": item.get("created_at", ""),
-            "updated_at": item.get("updated_at", ""),
-            "labels": [l["name"] for l in item.get("labels", [])],
-            "search_term": term,
-        })
+        is_pr = issue_type == "pull-request"
+        for item in data["items"]:
+            results.append({
+                "type": "pr" if is_pr else "issue",
+                "number": item["number"],
+                "title": item["title"],
+                "state": item["state"],
+                "url": item["html_url"],
+                "created_at": item.get("created_at", ""),
+                "updated_at": item.get("updated_at", ""),
+                "labels": [l["name"] for l in item.get("labels", [])],
+                "search_term": term,
+            })
 
     return results
 

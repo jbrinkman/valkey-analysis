@@ -82,6 +82,13 @@ REDIS_MODULE_KEYWORDS = {
     "redisai": ["redisai", "redis.commands.ai"],
 }
 
+# Redis modules with NO Valkey equivalent — their presence disqualifies implied Valkey support
+VALKEY_INCOMPATIBLE_MODULES = [
+    "redistimeseries",
+    "redisgraph",
+    "redisai",
+]
+
 # --- Dependency patterns per package manager ---
 
 MANIFEST_FILES = [
