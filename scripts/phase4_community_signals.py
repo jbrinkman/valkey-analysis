@@ -9,50 +9,27 @@ import httpx
 
 from config import (
     DATA_DIR,
-    GITHUB_API_BASE,
-    GITHUB_HEADERS,
     VALKEY_EXPLICIT_KEYWORDS,
     VALKEY_GLIDE_KEYWORDS,
     CONCURRENT_REQUESTS,
 )
+from github_client import github_get, github_post_graphql, github_search, log_rate_status
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
-
-sem = asyncio.Semaphore(CONCURRENT_REQUESTS)
 
 # Focused search terms for issues/PRs/discussions
 SEARCH_TERMS = ["valkey", "valkey-glide", "valkey-search"]
 
 
-async def github_get(client: httpx.AsyncClient, url: str, params: dict | None = None) -> dict | None:
-    """Make a rate-limit-aware GitHub API GET request."""
-    async with sem:
-        try:
-            resp = await client.get(url, headers=GITHUB_HEADERS, params=params)
-            if resp.status_code == 403 and "rate limit" in resp.text.lower():
-                retry_after = int(resp.headers.get("Retry-After", "60"))
-                log.warning("Rate limited, sleeping %ds", retry_after)
-                await asyncio.sleep(retry_after)
-                resp = await client.get(url, headers=GITHUB_HEADERS, params=params)
-            if resp.status_code == 404:
-                return None
-            resp.raise_for_status()
-            return resp.json()
-        except Exception as e:
-            log.debug("GitHub API error for %s: %s", url, e)
-            return None
-
-
 async def search_issues_prs(client: httpx.AsyncClient, owner: str, repo: str, term: str) -> list[dict]:
     """Search issues and PRs for a keyword using GitHub search API."""
     results = []
-    url = f"{GITHUB_API_BASE}/search/issues"
 
     # GitHub requires is:issue or is:pull-request qualifier
     for issue_type in ["issue", "pull-request"]:
         params = {"q": f"{term} repo:{owner}/{repo} is:{issue_type}", "per_page": 10, "sort": "updated"}
-        data = await github_get(client, url, params)
+        data = await github_search(client, "search/issues", params, resource="search")
         if not data or "items" not in data:
             continue
 
@@ -95,42 +72,25 @@ async def search_discussions(client: httpx.AsyncClient, owner: str, repo: str, t
     """
     variables = {"queryStr": f'"{term}" repo:{owner}/{repo}'}
 
-    async with sem:
-        try:
-            resp = await client.post(
-                "https://api.github.com/graphql",
-                headers=GITHUB_HEADERS,
-                json={"query": query, "variables": variables},
-            )
-            if resp.status_code == 403 and "rate limit" in resp.text.lower():
-                retry_after = int(resp.headers.get("Retry-After", "60"))
-                log.warning("Rate limited, sleeping %ds", retry_after)
-                await asyncio.sleep(retry_after)
-                resp = await client.post(
-                    "https://api.github.com/graphql",
-                    headers=GITHUB_HEADERS,
-                    json={"query": query, "variables": variables},
-                )
-            resp.raise_for_status()
-            data = resp.json()
+    data = await github_post_graphql(client, query, variables)
+    if not data:
+        return results
 
-            nodes = data.get("data", {}).get("search", {}).get("nodes", [])
-            for node in nodes:
-                if not node:
-                    continue
-                results.append({
-                    "type": "discussion",
-                    "number": node.get("number"),
-                    "title": node.get("title", ""),
-                    "url": node.get("url", ""),
-                    "created_at": node.get("createdAt", ""),
-                    "updated_at": node.get("updatedAt", ""),
-                    "category": node.get("category", {}).get("name", ""),
-                    "has_answer": node.get("answer") is not None,
-                    "search_term": term,
-                })
-        except Exception as e:
-            log.debug("Discussions search error for %s/%s: %s", owner, repo, e)
+    nodes = data.get("data", {}).get("search", {}).get("nodes", [])
+    for node in nodes:
+        if not node:
+            continue
+        results.append({
+            "type": "discussion",
+            "number": node.get("number"),
+            "title": node.get("title", ""),
+            "url": node.get("url", ""),
+            "created_at": node.get("createdAt", ""),
+            "updated_at": node.get("updatedAt", ""),
+            "category": node.get("category", {}).get("name", ""),
+            "has_answer": node.get("answer") is not None,
+            "search_term": term,
+        })
 
     return results
 
@@ -139,15 +99,13 @@ async def check_wiki(client: httpx.AsyncClient, owner: str, repo: str) -> dict:
     """Check if wiki exists and search for Valkey mentions via wiki pages API."""
     result = {"has_wiki": False, "valkey_mentions": []}
 
-    # Check if repo has wiki enabled
-    repo_data = await github_get(client, f"{GITHUB_API_BASE}/repos/{owner}/{repo}")
+    repo_data = await github_get(client, f"https://api.github.com/repos/{owner}/{repo}")
     if not repo_data or not repo_data.get("has_wiki"):
         return result
 
     result["has_wiki"] = True
 
-    # Fetch wiki pages list
-    pages_data = await github_get(client, f"{GITHUB_API_BASE}/repos/{owner}/{repo}/wiki/pages")
+    pages_data = await github_get(client, f"https://api.github.com/repos/{owner}/{repo}/wiki/pages")
     if not pages_data:
         return result
 

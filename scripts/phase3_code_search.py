@@ -4,82 +4,49 @@ import asyncio
 import json
 import logging
 import sys
-import time
 
 import httpx
 
 from config import (
     DATA_DIR,
-    GITHUB_API_BASE,
-    GITHUB_HEADERS,
-    VALKEY_EXPLICIT_KEYWORDS,
-    VALKEY_GLIDE_KEYWORDS,
     REDIS_MODULE_KEYWORDS,
-    GITHUB_SEARCH_RPM,
 )
+from github_client import github_search, log_rate_status
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
-# Code search rate limit: 30 req/min authenticated
-SEARCH_INTERVAL = 60.0 / GITHUB_SEARCH_RPM + 0.1  # seconds between requests
-
-# Keywords to search in code (kept focused to stay within rate limits)
-CODE_SEARCH_KEYWORDS = {
-    "valkey": VALKEY_EXPLICIT_KEYWORDS,
-    "valkey_glide": VALKEY_GLIDE_KEYWORDS,
-    "redis_modules": [kw for kws in REDIS_MODULE_KEYWORDS.values() for kw in kws if "." not in kw],
+# Focused keyword sets — one query each to minimize API calls
+# Valkey: single query for "valkey" catches valkey-py, valkey-glide, valkey-search etc.
+# Glide: single query for "valkey-glide"
+# Modules: one representative keyword per module (most distinctive)
+MODULE_SEARCH_KEYWORDS = {
+    "redisearch": "ft.search",
+    "redistimeseries": "ts.add",
+    "redisjson": "rejson",
+    "redisbloom": "bf.add",
+    "redisgraph": "graph.query",
+    "redisai": "redisai",
 }
 
 
-async def search_code(client: httpx.AsyncClient, query: str, last_request_time: list[float]) -> dict | None:
-    """Execute a GitHub code search with rate limiting. Returns API response or None."""
-    # Enforce rate limit
-    elapsed = time.time() - last_request_time[0]
-    if elapsed < SEARCH_INTERVAL:
-        await asyncio.sleep(SEARCH_INTERVAL - elapsed)
-
-    url = f"{GITHUB_API_BASE}/search/code"
-    params = {"q": query, "per_page": 10}
-
-    try:
-        resp = await client.get(url, headers=GITHUB_HEADERS, params=params)
-        last_request_time[0] = time.time()
-
-        if resp.status_code == 403:
-            retry_after = int(resp.headers.get("Retry-After", "60"))
-            log.warning("Code search rate limited, sleeping %ds", retry_after)
-            await asyncio.sleep(retry_after)
-            resp = await client.get(url, headers=GITHUB_HEADERS, params=params)
-            last_request_time[0] = time.time()
-
-        if resp.status_code == 422:
-            log.debug("Search query validation error for: %s", query)
-            return None
-
-        resp.raise_for_status()
-        return resp.json()
-    except Exception as e:
-        log.warning("Code search error for query '%s': %s", query, e)
-        return None
+async def code_search(client: httpx.AsyncClient, keyword: str, owner: str, repo: str) -> dict | None:
+    """Run a single code search query."""
+    params = {"q": f'"{keyword}" repo:{owner}/{repo}', "per_page": 10}
+    return await github_search(client, "search/code", params, resource="code_search")
 
 
-def extract_search_hits(response: dict) -> list[dict]:
-    """Extract relevant info from code search results."""
+def extract_hits(response: dict) -> list[dict]:
     if not response or "items" not in response:
         return []
-    hits = []
-    for item in response["items"]:
-        hits.append({
-            "file": item.get("path", ""),
-            "url": item.get("html_url", ""),
-            "score": item.get("score", 0),
-        })
-    return hits
+    return [
+        {"file": item.get("path", ""), "url": item.get("html_url", "")}
+        for item in response["items"]
+    ]
 
 
-async def analyze_repo(client: httpx.AsyncClient, owner: str, repo: str, last_request_time: list[float]) -> dict:
-    """Run code searches for a single repo."""
+async def analyze_repo(client: httpx.AsyncClient, owner: str, repo: str) -> dict:
+    """Run code searches for a single repo. 8 queries total."""
     result = {
         "owner": owner,
         "repo_name": repo,
@@ -94,45 +61,33 @@ async def analyze_repo(client: httpx.AsyncClient, owner: str, repo: str, last_re
         "has_redis_module_code": False,
     }
 
-    # Search for Valkey keywords
-    for kw in CODE_SEARCH_KEYWORDS["valkey"]:
-        query = f'"{kw}" repo:{owner}/{repo}'
-        resp = await search_code(client, query, last_request_time)
-        if resp and resp.get("total_count", 0) > 0:
-            hits = extract_search_hits(resp)
-            result["valkey_code_hits"].append({
-                "keyword": kw,
-                "total_count": resp["total_count"],
-                "files": hits,
-            })
+    # Query 1: "valkey" — catches valkey, valkey-py, valkey-search, etc.
+    resp = await code_search(client, "valkey", owner, repo)
+    if resp and resp.get("total_count", 0) > 0:
+        result["valkey_code_hits"].append({
+            "keyword": "valkey",
+            "total_count": resp["total_count"],
+            "files": extract_hits(resp),
+        })
 
-    # Search for Valkey-Glide keywords
-    for kw in CODE_SEARCH_KEYWORDS["valkey_glide"]:
-        query = f'"{kw}" repo:{owner}/{repo}'
-        resp = await search_code(client, query, last_request_time)
-        if resp and resp.get("total_count", 0) > 0:
-            hits = extract_search_hits(resp)
-            result["valkey_glide_code_hits"].append({
-                "keyword": kw,
-                "total_count": resp["total_count"],
-                "files": hits,
-            })
+    # Query 2: "valkey-glide" — specific glide check
+    resp = await code_search(client, "valkey-glide", owner, repo)
+    if resp and resp.get("total_count", 0) > 0:
+        result["valkey_glide_code_hits"].append({
+            "keyword": "valkey-glide",
+            "total_count": resp["total_count"],
+            "files": extract_hits(resp),
+        })
 
-    # Search for Redis module keywords including command prefixes (FT., TS., etc.)
-    for module, keywords in REDIS_MODULE_KEYWORDS.items():
-        module_hits = []
-        for kw in keywords:
-            query = f'"{kw}" repo:{owner}/{repo}'
-            resp = await search_code(client, query, last_request_time)
-            if resp and resp.get("total_count", 0) > 0:
-                hits = extract_search_hits(resp)
-                module_hits.append({
-                    "keyword": kw,
-                    "total_count": resp["total_count"],
-                    "files": hits,
-                })
-        if module_hits:
-            result["redis_module_code_hits"][module] = module_hits
+    # Queries 3-8: one per Redis module
+    for module, keyword in MODULE_SEARCH_KEYWORDS.items():
+        resp = await code_search(client, keyword, owner, repo)
+        if resp and resp.get("total_count", 0) > 0:
+            result["redis_module_code_hits"][module] = [{
+                "keyword": keyword,
+                "total_count": resp["total_count"],
+                "files": extract_hits(resp),
+            }]
 
     # Summarize
     result["valkey_total_files"] = sum(h["total_count"] for h in result["valkey_code_hits"])
@@ -146,31 +101,21 @@ async def analyze_repo(client: httpx.AsyncClient, owner: str, repo: str, last_re
     return result
 
 
-def select_repos_for_search(phase1_path: str | None, phase2_path: str | None, phase2b_path: str | None = None) -> list[dict]:
-    """Select repos to search based on prior phase signals. Returns list of {owner, repo_name}."""
+def select_repos_for_search() -> list[dict]:
+    """Select repos to search based on prior phase signals."""
     repos_to_search = {}
 
-    # All repos with any signal from Phase 1
-    if phase1_path:
-        p1 = json.loads(phase1_path)
-        for r in p1:
-            if r["triage"] in ("has_valkey_dep", "has_redis_dep"):
-                key = f"{r['owner']}/{r['repo_name']}"
-                repos_to_search[key] = {"owner": r["owner"], "repo_name": r["repo_name"]}
-
-    # All repos with any signal from Phase 2
-    if phase2_path:
-        p2 = json.loads(phase2_path)
-        for r in p2:
-            if r["has_valkey_signal"] or r["has_redis_signal"]:
-                key = f"{r['owner']}/{r['repo_name']}"
-                repos_to_search[key] = {"owner": r["owner"], "repo_name": r["repo_name"]}
-
-    # All repos with any signal from Phase 2b (DeepWiki)
-    if phase2b_path:
-        p2b = json.loads(phase2b_path)
-        for r in p2b:
-            if r.get("has_valkey_signal") or r.get("has_redis_signal"):
+    for phase_file, check_fn in [
+        ("phase1_results.json", lambda r: r.get("triage") in ("has_valkey_dep", "has_redis_dep")),
+        ("phase2_results.json", lambda r: r.get("has_valkey_signal") or r.get("has_redis_signal")),
+        ("phase2b_results.json", lambda r: r.get("has_valkey_signal") or r.get("has_redis_signal")),
+    ]:
+        path = DATA_DIR / phase_file
+        if not path.exists():
+            continue
+        data = json.loads(path.read_text())
+        for r in data:
+            if check_fn(r):
                 key = f"{r['owner']}/{r['repo_name']}"
                 repos_to_search[key] = {"owner": r["owner"], "repo_name": r["repo_name"]}
 
@@ -179,39 +124,33 @@ def select_repos_for_search(phase1_path: str | None, phase2_path: str | None, ph
 
 async def main(repo_filter: list[str] | None = None):
     """Run Phase 3 analysis."""
-    # Load prior phase results to determine scope
-    p1_file = DATA_DIR / "phase1_results.json"
-    p2_file = DATA_DIR / "phase2_results.json"
-    p2b_file = DATA_DIR / "phase2b_results.json"
-
-    p1_data = p1_file.read_text() if p1_file.exists() else None
-    p2_data = p2_file.read_text() if p2_file.exists() else None
-    p2b_data = p2b_file.read_text() if p2b_file.exists() else None
-
     if repo_filter:
         repos = [{"owner": r.split("/")[0], "repo_name": r.split("/")[1]} for r in repo_filter]
-    elif p1_data or p2_data or p2b_data:
-        repos = select_repos_for_search(p1_data, p2_data, p2b_data)
     else:
-        log.error("No prior phase results found and no repo filter specified")
-        sys.exit(1)
+        repos = select_repos_for_search()
+        if not repos:
+            log.error("No prior phase results found and no repo filter specified")
+            sys.exit(1)
 
-    log.info("Phase 3: searching code in %d repos", len(repos))
+    # 8 queries per repo, 10 queries/min limit = ~1.25 repos/min
+    est_minutes = len(repos) * 8 / 10
+    log.info("Phase 3: searching code in %d repos (~8 queries each, est. %.0f min)", len(repos), est_minutes)
 
     results = []
-    last_request_time = [0.0]
-
     async with httpx.AsyncClient(timeout=30) as client:
         for i, repo in enumerate(repos):
             owner, name = repo["owner"], repo["repo_name"]
             log.info("[%d/%d] Code search for %s/%s", i + 1, len(repos), owner, name)
-            result = await analyze_repo(client, owner, name, last_request_time)
+            result = await analyze_repo(client, owner, name)
             results.append(result)
+            if (i + 1) % 10 == 0:
+                log_rate_status()
 
     valkey_count = sum(1 for r in results if r["has_valkey_code"])
     glide_count = sum(1 for r in results if r["has_valkey_glide_code"])
     module_count = sum(1 for r in results if r["has_redis_module_code"])
-    log.info("Phase 3 complete: %d valkey code, %d glide code, %d redis module code", valkey_count, glide_count, module_count)
+    log.info("Phase 3 complete: %d valkey code, %d glide code, %d redis module code",
+             valkey_count, glide_count, module_count)
 
     output = DATA_DIR / "phase3_results.json"
     output.write_text(json.dumps(results, indent=2))

@@ -10,45 +10,22 @@ import httpx
 
 from config import (
     DATA_DIR,
-    GITHUB_API_BASE,
-    GITHUB_HEADERS,
     ECOSYSTEM_REPO_KEYWORDS,
     VALKEY_EXPLICIT_KEYWORDS,
     CONCURRENT_REQUESTS,
 )
+from github_client import github_get, log_rate_status
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
-
-sem = asyncio.Semaphore(CONCURRENT_REQUESTS)
-
-
-async def github_get(client: httpx.AsyncClient, url: str, params: dict | None = None) -> dict | list | None:
-    """Rate-limit-aware GitHub API GET."""
-    async with sem:
-        try:
-            resp = await client.get(url, headers=GITHUB_HEADERS, params=params)
-            if resp.status_code == 403 and "rate limit" in resp.text.lower():
-                retry_after = int(resp.headers.get("Retry-After", "60"))
-                log.warning("Rate limited, sleeping %ds", retry_after)
-                await asyncio.sleep(retry_after)
-                resp = await client.get(url, headers=GITHUB_HEADERS, params=params)
-            if resp.status_code == 404:
-                return None
-            resp.raise_for_status()
-            return resp.json()
-        except Exception as e:
-            log.debug("GitHub API error for %s: %s", url, e)
-            return None
 
 
 async def list_org_repos(client: httpx.AsyncClient, owner: str) -> list[dict]:
     """List all public repos for an org/user, paginated."""
     all_repos = []
-    # Try org endpoint first, fall back to user
-    for endpoint in [f"{GITHUB_API_BASE}/orgs/{owner}/repos", f"{GITHUB_API_BASE}/users/{owner}/repos"]:
+    for endpoint in [f"https://api.github.com/orgs/{owner}/repos", f"https://api.github.com/users/{owner}/repos"]:
         page = 1
-        while page <= 5:  # cap at 500 repos per org
+        while page <= 5:
             data = await github_get(client, endpoint, {"per_page": 100, "page": page})
             if data is None:
                 break
@@ -109,8 +86,7 @@ async def quick_scan_repo(client: httpx.AsyncClient, owner: str, repo_name: str)
         "details": "",
     }
 
-    # Fetch README
-    url = f"{GITHUB_API_BASE}/repos/{owner}/{repo_name}/readme"
+    url = f"https://api.github.com/repos/{owner}/{repo_name}/readme"
     data = await github_get(client, url)
     if not data or not data.get("content"):
         return result

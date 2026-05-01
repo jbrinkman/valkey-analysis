@@ -12,14 +12,13 @@ import httpx
 
 from config import (
     DATA_DIR,
-    GITHUB_API_BASE,
-    GITHUB_HEADERS,
     VALKEY_EXPLICIT_KEYWORDS,
     VALKEY_GLIDE_KEYWORDS,
     REDIS_KEYWORDS,
     REDIS_MODULE_KEYWORDS,
     CONCURRENT_REQUESTS,
 )
+from github_client import github_get, log_rate_status
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -79,38 +78,20 @@ def extract_docs_urls(text: str, homepage: str | None = None) -> list[str]:
 
 async def fetch_readme(client: httpx.AsyncClient, owner: str, repo: str) -> str | None:
     """Fetch README content via GitHub API."""
-    url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}/readme"
-    async with sem:
-        try:
-            resp = await client.get(url, headers=GITHUB_HEADERS)
-            if resp.status_code == 404:
-                return None
-            if resp.status_code == 403 and "rate limit" in resp.text.lower():
-                retry_after = int(resp.headers.get("Retry-After", "60"))
-                log.warning("Rate limited, sleeping %ds", retry_after)
-                await asyncio.sleep(retry_after)
-                resp = await client.get(url, headers=GITHUB_HEADERS)
-            resp.raise_for_status()
-            data = resp.json()
-            if data.get("encoding") == "base64" and data.get("content"):
-                return base64.b64decode(data["content"]).decode("utf-8", errors="replace")
-            return None
-        except Exception as e:
-            log.warning("Error fetching README for %s/%s: %s", owner, repo, e)
-            return None
+    url = f"https://api.github.com/repos/{owner}/{repo}/readme"
+    data = await github_get(client, url)
+    if not data or not data.get("content"):
+        return None
+    try:
+        return base64.b64decode(data["content"]).decode("utf-8", errors="replace")
+    except Exception:
+        return None
 
 
 async def fetch_repo_metadata(client: httpx.AsyncClient, owner: str, repo: str) -> dict | None:
     """Fetch repo metadata for homepage URL."""
-    url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}"
-    async with sem:
-        try:
-            resp = await client.get(url, headers=GITHUB_HEADERS)
-            resp.raise_for_status()
-            return resp.json()
-        except Exception as e:
-            log.warning("Error fetching metadata for %s/%s: %s", owner, repo, e)
-            return None
+    url = f"https://api.github.com/repos/{owner}/{repo}"
+    return await github_get(client, url)
 
 
 async def fetch_docs_page(client: httpx.AsyncClient, url: str) -> str | None:

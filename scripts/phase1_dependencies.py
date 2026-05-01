@@ -4,29 +4,23 @@ import asyncio
 import base64
 import json
 import logging
-import re
 import sys
-from pathlib import Path
 
 import httpx
 
 from config import (
     DATA_DIR,
     GITHUB_API_BASE,
-    GITHUB_HEADERS,
     MANIFEST_FILES,
     REPOS_API_URL,
     VALKEY_DEPENDENCIES,
     REDIS_DEPENDENCIES,
     VALKEY_GLIDE_KEYWORDS,
-    CONCURRENT_REQUESTS,
 )
+from github_client import github_get, log_rate_status
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
-
-# Semaphore for concurrency control
-sem = asyncio.Semaphore(CONCURRENT_REQUESTS)
 
 
 async def fetch_repo_list() -> list[dict]:
@@ -45,33 +39,6 @@ async def fetch_repo_list() -> list[dict]:
     return data["repos"]
 
 
-async def fetch_file_content(client: httpx.AsyncClient, owner: str, repo: str, path: str) -> str | None:
-    """Fetch a single file's content from GitHub API. Returns decoded text or None."""
-    url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}/contents/{path}"
-    async with sem:
-        try:
-            resp = await client.get(url, headers=GITHUB_HEADERS)
-            if resp.status_code == 404:
-                return None
-            if resp.status_code == 403 and "rate limit" in resp.text.lower():
-                retry_after = int(resp.headers.get("Retry-After", "60"))
-                log.warning("Rate limited, sleeping %ds", retry_after)
-                await asyncio.sleep(retry_after)
-                resp = await client.get(url, headers=GITHUB_HEADERS)
-            resp.raise_for_status()
-            data = resp.json()
-            if data.get("encoding") == "base64" and data.get("content"):
-                return base64.b64decode(data["content"]).decode("utf-8", errors="replace")
-            return None
-        except httpx.HTTPStatusError as e:
-            if e.response.status_code != 404:
-                log.warning("Error fetching %s/%s/%s: %s", owner, repo, path, e)
-            return None
-        except Exception as e:
-            log.warning("Error fetching %s/%s/%s: %s", owner, repo, path, e)
-            return None
-
-
 def scan_manifest(filename: str, content: str) -> dict:
     """Scan a manifest file for Valkey/Redis dependencies. Returns found deps."""
     found = {"valkey": [], "redis": [], "valkey_glide": False, "file": filename}
@@ -87,7 +54,6 @@ def scan_manifest(filename: str, content: str) -> dict:
         if dep.lower() in text_lower:
             found["redis"].append({"name": dep, "category": category})
 
-    # Also check for glide keywords in case of non-standard references
     for kw in VALKEY_GLIDE_KEYWORDS:
         if kw.lower() in text_lower and not found["valkey_glide"]:
             found["valkey_glide"] = True
@@ -96,7 +62,7 @@ def scan_manifest(filename: str, content: str) -> dict:
 
 
 async def analyze_repo(client: httpx.AsyncClient, repo: dict) -> dict:
-    """Analyze a single repo's dependencies."""
+    """Analyze a single repo's dependencies using tree API to minimize calls."""
     url = repo["github_url"]
     parts = url.rstrip("/").split("/")
     owner, name = parts[-2], parts[-1]
@@ -109,18 +75,32 @@ async def analyze_repo(client: httpx.AsyncClient, repo: dict) -> dict:
         "valkey_deps": [],
         "redis_deps": [],
         "valkey_glide_found": False,
-        "triage": "no_dep_signal",  # has_valkey_dep | has_redis_dep | no_dep_signal
+        "triage": "no_dep_signal",
     }
 
-    # Fetch all manifest files concurrently
-    tasks = {f: fetch_file_content(client, owner, name, f) for f in MANIFEST_FILES}
-    contents = {}
-    for f, coro in tasks.items():
-        contents[f] = await coro
+    # Use tree API to list files — 1 call instead of 13
+    tree_url = f"{GITHUB_API_BASE}/repos/{owner}/{name}/git/trees/HEAD"
+    tree_data = await github_get(client, tree_url, {"recursive": "false"})
 
-    for filename, content in contents.items():
-        if content is None:
+    if not tree_data or "tree" not in tree_data:
+        return result
+
+    # Find which manifest files exist in the repo root
+    existing_files = {item["path"] for item in tree_data["tree"] if item["type"] == "blob"}
+    manifests_to_fetch = [f for f in MANIFEST_FILES if f in existing_files]
+
+    # Fetch only the manifests that exist
+    for filename in manifests_to_fetch:
+        content_url = f"{GITHUB_API_BASE}/repos/{owner}/{name}/contents/{filename}"
+        data = await github_get(client, content_url)
+        if not data or not data.get("content"):
             continue
+
+        try:
+            content = base64.b64decode(data["content"]).decode("utf-8", errors="replace")
+        except Exception:
+            continue
+
         result["manifests_checked"].append(filename)
         scan = scan_manifest(filename, content)
 
@@ -147,7 +127,7 @@ async def analyze_repo(client: httpx.AsyncClient, repo: dict) -> dict:
 
 
 async def main(repo_filter: list[str] | None = None):
-    """Run Phase 1 analysis. Optional repo_filter is a list of 'owner/repo' to limit scope."""
+    """Run Phase 1 analysis."""
     repos = await fetch_repo_list()
     log.info("Loaded %d repos", len(repos))
 
@@ -161,8 +141,9 @@ async def main(repo_filter: list[str] | None = None):
             log.info("[%d/%d] Analyzing %s", i + 1, len(repos), repo["github_url"])
             result = await analyze_repo(client, repo)
             results.append(result)
+            if (i + 1) % 100 == 0:
+                log_rate_status()
 
-    # Summary
     valkey_count = sum(1 for r in results if r["triage"] == "has_valkey_dep")
     redis_count = sum(1 for r in results if r["triage"] == "has_redis_dep")
     none_count = sum(1 for r in results if r["triage"] == "no_dep_signal")
@@ -175,6 +156,5 @@ async def main(repo_filter: list[str] | None = None):
 
 
 if __name__ == "__main__":
-    # Accept optional repo filter as CLI args: python phase1_dependencies.py owner/repo owner2/repo2
     repo_filter = sys.argv[1:] if len(sys.argv) > 1 else None
     asyncio.run(main(repo_filter))
