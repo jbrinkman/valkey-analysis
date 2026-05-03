@@ -20,12 +20,14 @@ log = logging.getLogger(__name__)
 # Valkey: single query for "valkey" catches valkey-py, valkey-glide, valkey-search etc.
 # Glide: single query for "valkey-glide"
 # Modules: one representative keyword per module (most distinctive)
+# Use module library/package names — command prefixes like ts.add, graph.query
+# are too generic and produce false positives in non-Redis code
 MODULE_SEARCH_KEYWORDS = {
-    "redisearch": "ft.search",
-    "redistimeseries": "ts.add",
-    "redisjson": "rejson",
-    "redisbloom": "bf.add",
-    "redisgraph": "graph.query",
+    "redisearch": "redisearch",
+    "redistimeseries": "redistimeseries",
+    "redisjson": "redisjson",
+    "redisbloom": "redisbloom",
+    "redisgraph": "redisgraph",
     "redisai": "redisai",
 }
 

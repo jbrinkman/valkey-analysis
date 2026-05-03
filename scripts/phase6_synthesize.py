@@ -80,8 +80,39 @@ async def fetch_deepwiki(client: httpx.AsyncClient, owner: str, repo: str) -> st
             return None
 
 
+def is_negative_valkey_mention(title: str) -> bool:
+    """Check if an issue/PR title indicates Valkey is NOT supported."""
+    title_lower = title.lower()
+    negative_patterns = [
+        "not supported", "not compatible", "incompatible", "doesn't work",
+        "does not work", "doesn't support", "does not support", "not working",
+        "won't work", "will not work", "cannot use", "can't use",
+        "unable to", "fails with", "broken with", "issue with",
+        "not available", "unsupported", "no support",
+    ]
+    return any(p in title_lower for p in negative_patterns)
+
+
+def get_positive_valkey_issues(phases: dict) -> list[dict]:
+    """Filter issues/PRs to only those that are positive Valkey signals."""
+    p4 = phases.get("phase4", {})
+    positive = []
+    for ip in p4.get("issues_prs", []):
+        if not is_negative_valkey_mention(ip.get("title", "")):
+            positive.append(ip)
+    return positive
+
+
 def classify_valkey_support(phases: dict) -> str:
-    """Classify valkey_support as explicit, implied, or none."""
+    """Classify valkey_support as explicit, implied, or none.
+
+    Classification hierarchy:
+    1. Hard signals (Valkey deps, Valkey code) → explicit
+    2. Incompatible module check → can disqualify to none
+    3. Soft signals (docs, issues, extensions) → explicit only if no disqualifiers
+    4. Redis signals → implied only if no incompatible modules
+    5. Default → none
+    """
     p1 = phases.get("phase1", {})
     p2 = phases.get("phase2", {})
     p2b = phases.get("phase2b", {})
@@ -89,42 +120,44 @@ def classify_valkey_support(phases: dict) -> str:
     p4 = phases.get("phase4", {})
     p5 = phases.get("phase5", {})
 
-    # Explicit: Valkey dependency, Valkey code references, or Valkey doc mentions
+    # Check for incompatible modules upfront — affects both explicit and implied
+    modules_used = detect_redis_modules(phases)
+    incompatible = [m for m in modules_used if m in VALKEY_INCOMPATIBLE_MODULES]
+
+    # Hard explicit: Valkey dependency or Valkey code in the repo itself
+    # These are strong enough to override incompatible modules — the project
+    # has deliberately added Valkey support
     if p1.get("valkey_deps"):
         return "explicit"
     if p3.get("has_valkey_code"):
         return "explicit"
+
+    # Soft explicit: docs, issues, extensions mention Valkey
+    # These can be false positives, so incompatible modules disqualify
+    if incompatible:
+        return "none"
+
     if p2.get("has_valkey_signal"):
         valkey_mentions = p2.get("valkey_mentions", [])
-        if any(m.get("count", 0) >= 2 for m in valkey_mentions):
-            return "explicit"
         if valkey_mentions:
             return "explicit"
     if p2.get("docs_valkey_mentions"):
         return "explicit"
     if p2b.get("has_valkey_signal"):
         return "explicit"
-    if p4.get("has_valkey_issues_prs"):
-        # Issues/PRs about Valkey suggest active work — but check if merged/closed
-        merged_prs = [ip for ip in p4.get("issues_prs", [])
-                      if ip.get("type") == "pr" and ip.get("state") == "closed"]
-        if merged_prs:
-            return "explicit"
+
+    # Issues/PRs: informational only — not sufficient to trigger explicit
+    # They often contain bug reports, "not supported" complaints, or tangential mentions
+    # The report will still include them as evidence for human review
+
     if p5.get("has_valkey_extension"):
         return "explicit"
 
     # Implied: Redis dependency with compatible use case
-    # BUT: if the project depends on Redis modules with no Valkey equivalent,
-    # it won't work with Valkey, so disqualify implied support
-    # NOTE: DeepWiki (phase2b) alone is not sufficient for implied — it can mention
-    # Redis for stub/unfinished implementations. Require corroboration from deps or docs.
+    # DeepWiki alone is not sufficient — requires corroboration from deps or docs
     has_strong_redis_signal = p1.get("redis_deps") or p2.get("has_redis_signal") or p5.get("has_redis_extension")
     has_deepwiki_redis = p2b.get("has_redis_signal")
     if has_strong_redis_signal or (has_deepwiki_redis and (p1.get("redis_deps") or p2.get("has_redis_signal"))):
-        modules_used = detect_redis_modules(phases)
-        incompatible = [m for m in modules_used if m in VALKEY_INCOMPATIBLE_MODULES]
-        if incompatible:
-            return "none"
         return "implied"
 
     return "none"
@@ -341,8 +374,15 @@ def build_evidence_summary(valkey_support: str, valkey_search_support: str,
         parts.append("Explicit Valkey-Search support detected.")
 
     if evidence["issues_prs"]:
-        count = len(evidence["issues_prs"])
-        parts.append(f"{count} related issue(s)/PR(s) found.")
+        total = len(evidence["issues_prs"])
+        negative = sum(1 for ip in evidence["issues_prs"] if is_negative_valkey_mention(ip.get("title", "")))
+        positive = total - negative
+        if negative and positive:
+            parts.append(f"{total} related issue(s)/PR(s) found ({negative} indicate Valkey is NOT supported).")
+        elif negative:
+            parts.append(f"{total} related issue(s)/PR(s) found (all indicate Valkey is NOT supported).")
+        else:
+            parts.append(f"{total} related issue(s)/PR(s) found.")
 
     if evidence["discussions"]:
         count = len(evidence["discussions"])
