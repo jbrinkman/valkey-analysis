@@ -1,0 +1,316 @@
+[
+  {
+    "repo_name": "n8n",
+    "owner": "n8n-io",
+    "github_url": "https://github.com/n8n-io/n8n",
+    "description": "Fair-code workflow automation platform with native AI capabilities. Combine visual building with custom code, self-host or cloud, 400+ integrations.",
+    "language": "TypeScript",
+    "stars": 186290,
+    "valkey_support": "implied",
+    "valkey_search_support": "none",
+    "valkey_glide_used": false,
+    "redisearch_usage": false,
+    "integration_details": {
+      "client_libraries": [],
+      "use_cases": [],
+      "integration_type": "extension",
+      "redis_modules_used": []
+    },
+    "evidence": {
+      "dependencies": [],
+      "code_references": 0,
+      "doc_mentions": true,
+      "readme_mentions": false,
+      "issues_prs": [
+        {
+          "type": "issue",
+          "number": 27753,
+          "title": "Redis connection sometimes not recovered",
+          "state": "closed",
+          "url": "https://github.com/n8n-io/n8n/issues/27753",
+          "created_at": "2026-03-30T11:56:32Z",
+          "updated_at": "2026-04-28T10:34:44Z",
+          "labels": [
+            "Needs Feedback",
+            "team:cats",
+            "status:in-linear",
+            "status:team-assigned"
+          ],
+          "search_term": "valkey",
+          "sentiment": "inconclusive"
+        },
+        {
+          "type": "issue",
+          "number": 26144,
+          "title": "n8n pods restart after a valkey rolling update",
+          "state": "closed",
+          "url": "https://github.com/n8n-io/n8n/issues/26144",
+          "created_at": "2026-02-23T16:54:39Z",
+          "updated_at": "2026-03-20T20:30:28Z",
+          "labels": [
+            "status:in-linear",
+            "closed:cant-reproduce"
+          ],
+          "search_term": "valkey",
+          "sentiment": "inconclusive"
+        },
+        {
+          "type": "issue",
+          "number": 21361,
+          "title": "Redis Vector Store node incompatible with AWS ElastiCache Valkey - TEXT field not supported",
+          "state": "closed",
+          "url": "https://github.com/n8n-io/n8n/issues/21361",
+          "created_at": "2025-10-30T04:24:35Z",
+          "updated_at": "2025-10-31T09:42:19Z",
+          "labels": [
+            "closed:enhancement/feature",
+            "status:in-linear"
+          ],
+          "search_term": "valkey",
+          "sentiment": "negative"
+        },
+        {
+          "type": "issue",
+          "number": 20906,
+          "title": "worker http server not listening on 5679",
+          "state": "closed",
+          "url": "https://github.com/n8n-io/n8n/issues/20906",
+          "created_at": "2025-10-17T11:15:30Z",
+          "updated_at": "2025-10-23T13:16:32Z",
+          "labels": [
+            "in linear"
+          ],
+          "search_term": "valkey",
+          "sentiment": "inconclusive"
+        },
+        {
+          "type": "issue",
+          "number": 16590,
+          "title": "Bug: AWS ElastiCache Serverless not supported",
+          "state": "closed",
+          "url": "https://github.com/n8n-io/n8n/issues/16590",
+          "created_at": "2025-06-22T01:03:40Z",
+          "updated_at": "2025-06-22T03:41:20Z",
+          "labels": [
+            "in linear"
+          ],
+          "search_term": "valkey",
+          "sentiment": "negative"
+        },
+        {
+          "type": "pr",
+          "number": 16592,
+          "title": "fix(Redis): Allow for using AWS ElastiCache Serverless in Queue Mode",
+          "state": "closed",
+          "url": "https://github.com/n8n-io/n8n/pull/16592",
+          "created_at": "2025-06-22T01:38:48Z",
+          "updated_at": "2025-12-23T05:15:52Z",
+          "labels": [
+            "core",
+            "community",
+            "in linear"
+          ],
+          "search_term": "valkey",
+          "sentiment": "positive"
+        },
+        {
+          "type": "pr",
+          "number": 16591,
+          "title": "fix(Redis): Allow for using AWS ElastiCache Serverless in Queue Mode",
+          "state": "closed",
+          "url": "https://github.com/n8n-io/n8n/pull/16591",
+          "created_at": "2025-06-22T01:35:54Z",
+          "updated_at": "2025-07-10T20:33:40Z",
+          "labels": [],
+          "search_term": "valkey",
+          "sentiment": "positive"
+        }
+      ],
+      "discussions": [],
+      "wiki_mentions": false,
+      "community_extensions": [
+        {
+          "repo_url": "https://github.com/n8n-io/terraform-azurerm-avm-res-cache-redis",
+          "description": null,
+          "valkey_mentioned": false,
+          "redis_mentioned": true
+        }
+      ]
+    },
+    "evidence_summary": "Implied Valkey compatibility via Redis integration. 7 related issue(s)/PR(s) found (2 negative, 3 inconclusive, 2 positive). 1 related extension repo(s) found (0 mention Valkey).",
+    "detail_report": "reports/n8n-io__n8n.md",
+    "analyzed_at": "2026-05-03T00:56:44.314719+00:00"
+  },
+  {
+    "repo_name": "gorse",
+    "owner": "gorse-io",
+    "github_url": "https://github.com/gorse-io/gorse",
+    "description": "AI powered open source recommender system engine supports classical/LLM rankers and multimodal content via embedding",
+    "language": "Go",
+    "stars": 9618,
+    "valkey_support": "none",
+    "valkey_search_support": "none",
+    "valkey_glide_used": false,
+    "redisearch_usage": true,
+    "integration_details": {
+      "client_libraries": [
+        "github.com/redis/go-redis",
+        "redis"
+      ],
+      "use_cases": [
+        "cache",
+        "time_series",
+        "vector_store"
+      ],
+      "integration_type": "native",
+      "redis_modules_used": [
+        "redisearch",
+        "redistimeseries"
+      ]
+    },
+    "evidence": {
+      "dependencies": [
+        "redis",
+        "github.com/redis/go-redis"
+      ],
+      "code_references": 0,
+      "doc_mentions": true,
+      "readme_mentions": true,
+      "issues_prs": [
+        {
+          "type": "issue",
+          "number": 1260,
+          "title": "Add Valkey as a cache storage backend",
+          "state": "open",
+          "url": "https://github.com/gorse-io/gorse/issues/1260",
+          "created_at": "2026-04-30T17:10:55Z",
+          "updated_at": "2026-05-01T14:23:33Z",
+          "labels": [
+            "blocking"
+          ],
+          "search_term": "valkey",
+          "sentiment": "positive"
+        }
+      ],
+      "discussions": [],
+      "wiki_mentions": false,
+      "community_extensions": []
+    },
+    "evidence_summary": "Redis integration detected but uses Valkey-incompatible module(s): redistimeseries. Redis dependencies: redis, github.com/redis/go-redis. 1 related issue(s)/PR(s) found (1 positive). Redis modules used: redisearch, redistimeseries.",
+    "detail_report": "reports/gorse-io__gorse.md",
+    "analyzed_at": "2026-05-03T00:56:44.341623+00:00"
+  },
+  {
+    "repo_name": "cognee",
+    "owner": "topoteretes",
+    "github_url": "https://github.com/topoteretes/cognee",
+    "description": "Knowledge Engine for AI Agent Memory in 6 lines of code",
+    "language": "Python",
+    "stars": 16717,
+    "valkey_support": "explicit",
+    "valkey_search_support": "none",
+    "valkey_glide_used": false,
+    "redisearch_usage": false,
+    "integration_details": {
+      "client_libraries": [
+        "redis"
+      ],
+      "use_cases": [],
+      "integration_type": "extension",
+      "redis_modules_used": []
+    },
+    "evidence": {
+      "dependencies": [
+        "redis"
+      ],
+      "code_references": 0,
+      "doc_mentions": true,
+      "readme_mentions": false,
+      "issues_prs": [
+        {
+          "type": "issue",
+          "number": 1803,
+          "title": "[Feature]: Add Valkey vector adapter to cognee-community",
+          "state": "closed",
+          "url": "https://github.com/topoteretes/cognee/issues/1803",
+          "created_at": "2025-11-17T18:21:23Z",
+          "updated_at": "2025-12-28T19:40:59Z",
+          "labels": [
+            "enhancement"
+          ],
+          "search_term": "valkey",
+          "sentiment": "inconclusive"
+        }
+      ],
+      "discussions": [],
+      "wiki_mentions": false,
+      "community_extensions": [
+        {
+          "repo_url": "https://github.com/topoteretes/cognee-community",
+          "description": "Repo for community managed plugins and addons for cognee.",
+          "valkey_mentioned": true,
+          "redis_mentioned": true
+        },
+        {
+          "repo_url": "https://github.com/topoteretes/cognee-integrations",
+          "description": null,
+          "valkey_mentioned": false,
+          "redis_mentioned": false
+        },
+        {
+          "repo_url": "https://github.com/topoteretes/dify-plugins",
+          "description": "All Dify Plugins listed in Dify Marketplace, plus illustrated plugin examples.",
+          "valkey_mentioned": false,
+          "redis_mentioned": false
+        }
+      ]
+    },
+    "evidence_summary": "Explicit Valkey support detected. 1 related issue(s)/PR(s) found (1 inconclusive). 3 related extension repo(s) found (1 mention Valkey).",
+    "detail_report": "reports/topoteretes__cognee.md",
+    "analyzed_at": "2026-05-03T00:56:44.369803+00:00"
+  },
+  {
+    "repo_name": "DB-GPT",
+    "owner": "eosphoros-ai",
+    "github_url": "https://github.com/eosphoros-ai/DB-GPT",
+    "description": "open-source agentic AI data assistant for the next generation of AI + Data products.",
+    "language": "Python",
+    "stars": 18643,
+    "valkey_support": "none",
+    "valkey_search_support": "none",
+    "valkey_glide_used": false,
+    "redisearch_usage": false,
+    "integration_details": {
+      "client_libraries": [],
+      "use_cases": [],
+      "integration_type": "none",
+      "redis_modules_used": []
+    },
+    "evidence": {
+      "dependencies": [],
+      "code_references": 0,
+      "doc_mentions": false,
+      "readme_mentions": false,
+      "issues_prs": [],
+      "discussions": [],
+      "wiki_mentions": false,
+      "community_extensions": [
+        {
+          "repo_url": "https://github.com/eosphoros-ai/DB-GPT-Plugins",
+          "description": "Multi-Agents & Plugins repo for DB-GPT, Can complete various tasks around databases.",
+          "valkey_mentioned": false,
+          "redis_mentioned": false
+        },
+        {
+          "repo_url": "https://github.com/eosphoros-ai/community",
+          "description": null,
+          "valkey_mentioned": false,
+          "redis_mentioned": false
+        }
+      ]
+    },
+    "evidence_summary": "No Valkey or Redis integration detected. 2 related extension repo(s) found (0 mention Valkey).",
+    "detail_report": "reports/eosphoros-ai__DB-GPT.md",
+    "analyzed_at": "2026-05-03T00:56:44.396777+00:00"
+  }
+]

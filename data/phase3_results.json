@@ -1,0 +1,54 @@
+[
+  {
+    "owner": "n8n-io",
+    "repo_name": "n8n",
+    "github_url": "https://github.com/n8n-io/n8n",
+    "valkey_code_hits": [],
+    "valkey_glide_code_hits": [],
+    "redis_module_code_hits": {},
+    "valkey_total_files": 0,
+    "redis_module_total_files": 0,
+    "has_valkey_code": false,
+    "has_valkey_glide_code": false,
+    "has_redis_module_code": false
+  },
+  {
+    "owner": "topoteretes",
+    "repo_name": "cognee",
+    "github_url": "https://github.com/topoteretes/cognee",
+    "valkey_code_hits": [],
+    "valkey_glide_code_hits": [],
+    "redis_module_code_hits": {},
+    "valkey_total_files": 0,
+    "redis_module_total_files": 0,
+    "has_valkey_code": false,
+    "has_valkey_glide_code": false,
+    "has_redis_module_code": false
+  },
+  {
+    "owner": "gorse-io",
+    "repo_name": "gorse",
+    "github_url": "https://github.com/gorse-io/gorse",
+    "valkey_code_hits": [],
+    "valkey_glide_code_hits": [],
+    "redis_module_code_hits": {},
+    "valkey_total_files": 0,
+    "redis_module_total_files": 0,
+    "has_valkey_code": false,
+    "has_valkey_glide_code": false,
+    "has_redis_module_code": false
+  },
+  {
+    "owner": "eosphoros-ai",
+    "repo_name": "DB-GPT",
+    "github_url": "https://github.com/eosphoros-ai/DB-GPT",
+    "valkey_code_hits": [],
+    "valkey_glide_code_hits": [],
+    "redis_module_code_hits": {},
+    "valkey_total_files": 0,
+    "redis_module_total_files": 0,
+    "has_valkey_code": false,
+    "has_valkey_glide_code": false,
+    "has_redis_module_code": false
+  }
+]
