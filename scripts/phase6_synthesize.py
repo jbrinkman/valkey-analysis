@@ -312,7 +312,17 @@ def build_evidence(phases: dict) -> dict:
     doc_mentions = p2.get("has_valkey_signal", False) or p2.get("has_redis_signal", False)
     readme_mentions = bool(p2.get("valkey_mentions") or p2.get("redis_mentions"))
 
-    issues_prs = p4.get("issues_prs", [])
+    issues_prs = []
+    for ip in p4.get("issues_prs", []):
+        tagged = dict(ip)
+        if is_negative_valkey_mention(ip.get("title", "")):
+            tagged["sentiment"] = "negative"
+        elif ip.get("type") == "issue" and ip.get("state") == "closed":
+            # Closed issue without a corresponding PR — likely rejected/won't fix
+            tagged["sentiment"] = "inconclusive"
+        else:
+            tagged["sentiment"] = "positive"
+        issues_prs.append(tagged)
     discussions = p4.get("discussions", [])
     wiki_mentions = p4.get("has_valkey_wiki", False)
 
@@ -375,14 +385,17 @@ def build_evidence_summary(valkey_support: str, valkey_search_support: str,
 
     if evidence["issues_prs"]:
         total = len(evidence["issues_prs"])
-        negative = sum(1 for ip in evidence["issues_prs"] if is_negative_valkey_mention(ip.get("title", "")))
-        positive = total - negative
-        if negative and positive:
-            parts.append(f"{total} related issue(s)/PR(s) found ({negative} indicate Valkey is NOT supported).")
-        elif negative:
-            parts.append(f"{total} related issue(s)/PR(s) found (all indicate Valkey is NOT supported).")
-        else:
-            parts.append(f"{total} related issue(s)/PR(s) found.")
+        negative = sum(1 for ip in evidence["issues_prs"] if ip.get("sentiment") == "negative")
+        inconclusive = sum(1 for ip in evidence["issues_prs"] if ip.get("sentiment") == "inconclusive")
+        positive = total - negative - inconclusive
+        qualifiers = []
+        if negative:
+            qualifiers.append(f"{negative} negative")
+        if inconclusive:
+            qualifiers.append(f"{inconclusive} inconclusive")
+        if positive:
+            qualifiers.append(f"{positive} positive")
+        parts.append(f"{total} related issue(s)/PR(s) found ({', '.join(qualifiers)}).")
 
     if evidence["discussions"]:
         count = len(evidence["discussions"])
@@ -496,10 +509,12 @@ def generate_markdown_report(repo_key: str, result: dict, phases: dict, deepwiki
     # Phase 4: Community Signals
     p4 = phases.get("phase4", {})
     lines.extend(["## Phase 4: Community Signals", ""])
-    if p4.get("issues_prs"):
+    if result.get("evidence", {}).get("issues_prs"):
         lines.append("**Issues/PRs:**")
-        for ip in p4["issues_prs"]:
-            lines.append(f"- [{ip['type'].upper()} #{ip['number']}]({ip['url']}): {ip['title']} ({ip['state']})")
+        sentiment_icons = {"negative": "⛔", "inconclusive": "❓", "positive": "✅"}
+        for ip in result["evidence"]["issues_prs"]:
+            icon = sentiment_icons.get(ip.get("sentiment", ""), "")
+            lines.append(f"- {icon} [{ip['type'].upper()} #{ip['number']}]({ip['url']}): {ip['title']} ({ip['state']})")
         lines.append("")
     if p4.get("discussions"):
         lines.append("**Discussions:**")
