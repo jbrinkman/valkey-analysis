@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BackLink from '../../components/BackLink.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import { getAllRepos, getReportHtml } from '../../lib/data';
+import type { RepoEntry } from '../../types/index.ts';
+
+export async function getStaticPaths() {
+  const repos = getAllRepos();
+  return repos.map((repo) => ({
+    params: { slug: `${repo.owner}/${repo.repo_name}` },
+    props: { repo },
+  }));
+}
+
+interface Props {
+  repo: RepoEntry;
+}
+
+const { repo } = Astro.props;
+const reportHtml = await getReportHtml(repo.owner, repo.repo_name);
+---
+
+<BaseLayout title={`${repo.owner}/${repo.repo_name} — Valkey Analysis`}>
+  <BackLink />
+
+  <section class="detail-meta">
+    <h1>{repo.owner}/{repo.repo_name}</h1>
+    <p class="detail-meta__description">{repo.description || 'No description available.'}</p>
+    <div class="detail-meta__tags">
+      <span>🔗 <a href={repo.github_url} target="_blank" rel="noopener noreferrer">GitHub</a></span>
+      <span>💻 {repo.language || 'Unknown'}</span>
+      <span>⭐ {repo.stars.toLocaleString()}</span>
+    </div>
+  </section>
+
+  <section class="classification-table">
+    <h2>Classification</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Valkey Support</td>
+          <td><StatusBadge status={repo.valkey_support} /></td>
+        </tr>
+        <tr>
+          <td>Valkey Search Support</td>
+          <td><StatusBadge status={repo.valkey_search_support} /></td>
+        </tr>
+        <tr>
+          <td>Valkey Glide</td>
+          <td>{repo.valkey_glide_used ? '✓' : '✗'}</td>
+        </tr>
+        <tr>
+          <td>RediSearch Usage</td>
+          <td>{repo.redisearch_usage ? '✓' : '✗'}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="report-content">
+    <h2>Analysis Report</h2>
+    <Fragment set:html={reportHtml} />
+  </section>
+</BaseLayout>

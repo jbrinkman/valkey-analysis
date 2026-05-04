@@ -1,0 +1,113 @@
+---
+// ThemeToggle — three-state color mode switcher (light / dark / system)
+// Uses is:inline script so theme logic runs directly in the browser.
+---
+
+<div class="theme-toggle" role="group" aria-label="Color mode">
+  <button
+    class="theme-toggle__btn"
+    type="button"
+    data-theme="light"
+    aria-pressed="false"
+    aria-label="Light theme"
+  >☀️ Light</button>
+  <button
+    class="theme-toggle__btn"
+    type="button"
+    data-theme="dark"
+    aria-pressed="false"
+    aria-label="Dark theme"
+  >🌙 Dark</button>
+  <button
+    class="theme-toggle__btn"
+    type="button"
+    data-theme="system"
+    aria-pressed="false"
+    aria-label="System theme"
+  >💻 System</button>
+</div>
+
+<script is:inline>
+(function () {
+  var THEME_KEY = 'theme';
+  var DEFAULT_THEME = 'system';
+
+  /** Read stored theme from localStorage, default to "system". */
+  function getTheme() {
+    try {
+      return localStorage.getItem(THEME_KEY) || DEFAULT_THEME;
+    } catch (_) {
+      return DEFAULT_THEME;
+    }
+  }
+
+  /** Write theme choice to localStorage. */
+  function setTheme(theme) {
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch (_) {
+      // localStorage unavailable — ignore
+    }
+  }
+
+  /** Resolve a theme value to "light" or "dark". */
+  function resolveTheme(theme) {
+    if (theme === 'light') return 'light';
+    if (theme === 'dark') return 'dark';
+    // "system" or unrecognized — detect from OS
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  }
+
+  /** Update button active states to reflect the current stored theme. */
+  function updateButtons(storedTheme) {
+    var buttons = document.querySelectorAll('.theme-toggle__btn[data-theme]');
+    for (var i = 0; i < buttons.length; i++) {
+      var btn = buttons[i];
+      var isActive = btn.getAttribute('data-theme') === storedTheme;
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      if (isActive) {
+        btn.classList.add('theme-toggle__btn--active');
+      } else {
+        btn.classList.remove('theme-toggle__btn--active');
+      }
+    }
+  }
+
+  /** Apply the resolved theme to the document and update button states. */
+  function applyTheme(storedTheme) {
+    document.documentElement.dataset.theme = resolveTheme(storedTheme);
+    updateButtons(storedTheme);
+  }
+
+  // --- Initialise on load ---
+  var current = getTheme();
+  applyTheme(current);
+
+  // --- Click handlers ---
+  var buttons = document.querySelectorAll('.theme-toggle__btn[data-theme]');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function () {
+      var chosen = this.getAttribute('data-theme');
+      setTheme(chosen);
+      applyTheme(chosen);
+    });
+  }
+
+  // --- Listen for OS color-scheme changes (relevant when in system mode) ---
+  var mql = window.matchMedia('(prefers-color-scheme: dark)');
+  function onSystemChange() {
+    var stored = getTheme();
+    if (stored === 'system') {
+      document.documentElement.dataset.theme = resolveTheme('system');
+    }
+  }
+  if (mql.addEventListener) {
+    mql.addEventListener('change', onSystemChange);
+  } else if (mql.addListener) {
+    // Fallback for older browsers
+    mql.addListener(onSystemChange);
+  }
+})();
+</script>

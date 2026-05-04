@@ -1,0 +1,23 @@
+{
+  "name": "valkey-analysis-dashboard",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "astro": "^6.0.0",
+    "marked": "^15.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@types/node": "^25.6.0",
+    "fast-check": "^4.1.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.1"
+  }
+}

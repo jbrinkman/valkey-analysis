@@ -1,0 +1,49 @@
+---
+import Header from '../components/Header.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Valkey integration analysis across 899 open-source repositories' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/valkey-analysis/favicon.svg" />
+    <title>{title}</title>
+    <script is:inline>
+      // Theme-init: prevent flash of incorrect theme (FOIT prevention)
+      // Runs synchronously before first paint to set the correct data-theme attribute.
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+        } catch (_) {
+          var stored = null;
+        }
+        var resolved;
+        if (stored === 'light' || stored === 'dark') {
+          resolved = stored;
+        } else {
+          // stored is 'system', null, or any unexpected value — detect from OS
+          resolved = window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+        }
+        document.documentElement.dataset.theme = resolved;
+      })();
+    </script>
+  </head>
+  <body>
+    <Header />
+    <main class="container">
+      <slot />
+    </main>
+  </body>
+</html>

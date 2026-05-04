@@ -1,0 +1,36 @@
+---
+import type { ResultsSummary } from '../types/index';
+
+interface Props {
+  summary: ResultsSummary;
+}
+
+const { summary } = Astro.props;
+---
+
+<section class="stats-grid" aria-label="Summary statistics">
+  <div class="stat-card">
+    <span class="stat-card__value">{summary.total_repos}</span>
+    <span class="stat-card__label">Total Repos</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-card__value">{summary.valkey_support.explicit}</span>
+    <span class="stat-card__label">Explicit Support</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-card__value">{summary.valkey_support.implied}</span>
+    <span class="stat-card__label">Implied Support</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-card__value">{summary.valkey_support.none}</span>
+    <span class="stat-card__label">No Support</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-card__value">{summary.valkey_glide_used}</span>
+    <span class="stat-card__label">Valkey Glide Users</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-card__value">{summary.redisearch_usage}</span>
+    <span class="stat-card__label">RediSearch Users</span>
+  </div>
+</section>
