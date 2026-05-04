@@ -1,0 +1,9 @@
+---
+interface Props {
+  status: 'explicit' | 'implied' | 'none';
+}
+
+const { status } = Astro.props;
+---
+
+<span class={`badge badge--${status}`}>{status.charAt(0).toUpperCase() + status.slice(1)}</span>

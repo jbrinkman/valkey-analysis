@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SummaryStats from '../components/SummaryStats.astro';
+import ProjectTable from '../components/ProjectTable.astro';
+import { getAllRepos, getSummary } from '../lib/data';
+
+const repos = getAllRepos();
+const summary = getSummary();
+---
+
+<BaseLayout title="Valkey Analysis Dashboard">
+  <h1>Valkey Analysis Dashboard</h1>
+  <p class="repo-count">{summary.total_repos} repositories analyzed</p>
+  <SummaryStats summary={summary} />
+  <ProjectTable repos={repos} />
+</BaseLayout>

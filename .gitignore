@@ -8,3 +8,7 @@ dist/
 build/
 .DS_Store
 
+# Website (Astro)
+node_modules/
+website/dist/
+website/.astro/

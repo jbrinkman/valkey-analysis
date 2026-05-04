@@ -1,0 +1,98 @@
+---
+import type { RepoEntry } from '../types/index';
+import StatusBadge from './StatusBadge.astro';
+import { formatUseCases } from '../lib/helpers';
+
+interface Props {
+  repos: RepoEntry[];
+}
+
+const { repos } = Astro.props;
+---
+
+<section aria-label="Project list">
+  <div class="filter-bar" role="toolbar" aria-label="Filter by Valkey support status">
+    <span class="filter-bar__label">Filter:</span>
+    <button
+      class="filter-btn filter-btn--active"
+      aria-pressed="true"
+      data-filter="all"
+    >All</button>
+    <button
+      class="filter-btn"
+      aria-pressed="false"
+      data-filter="explicit"
+    >Explicit</button>
+    <button
+      class="filter-btn"
+      aria-pressed="false"
+      data-filter="implied"
+    >Implied</button>
+    <button
+      class="filter-btn"
+      aria-pressed="false"
+      data-filter="none"
+    >None</button>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Valkey Support</th>
+          <th>Valkey Glide</th>
+          <th>Use Cases</th>
+        </tr>
+      </thead>
+      <tbody>
+        {repos.map((repo) => (
+          <tr data-support={repo.valkey_support}>
+            <td>
+              <a href={`/valkey-analysis/projects/${repo.owner}/${repo.repo_name}`}>
+                {repo.owner}/{repo.repo_name}
+              </a>
+            </td>
+            <td>
+              <StatusBadge status={repo.valkey_support} />
+            </td>
+            <td>{repo.valkey_glide_used ? '✓' : '✗'}</td>
+            <td>{formatUseCases(repo.integration_details.use_cases)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    const filterBar = document.querySelector('.filter-bar');
+    if (!filterBar) return;
+
+    filterBar.addEventListener('click', function (e) {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+
+      const filter = btn.getAttribute('data-filter');
+
+      // Update active button state
+      filterBar.querySelectorAll('.filter-btn').forEach(function (b) {
+        b.classList.remove('filter-btn--active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('filter-btn--active');
+      btn.setAttribute('aria-pressed', 'true');
+
+      // Filter table rows
+      var rows = document.querySelectorAll('tbody tr[data-support]');
+      rows.forEach(function (row) {
+        if (filter === 'all' || row.getAttribute('data-support') === filter) {
+          row.removeAttribute('hidden');
+        } else {
+          row.setAttribute('hidden', '');
+        }
+      });
+    });
+  })();
+</script>
