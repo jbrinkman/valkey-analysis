@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: ripienaar/free-for-dev
 
 **GitHub:** https://github.com/ripienaar/free-for-dev
-**Analyzed:** 2026-05-02T01:40:32.844383+00:00
+**Analyzed:** 2026-05-04T02:04:36.542393+00:00
 
 ## Classification
 
@@ -37,13 +37,6 @@ Manifests checked: None found
 - `redis` (3 occurrences)
 
 ## Phase 3: Code Search
-
-**Valkey code references:**
-- `valkey`: 1 file(s)
-  - [README.md](https://github.com/ripienaar/free-for-dev/blob/427524621374adf270f103169723c54d305f03f6/README.md)
-
-**Redis module code references:**
-- `redisjson` / `rejson`: 1 file(s)
 
 ## Phase 4: Community Signals
 

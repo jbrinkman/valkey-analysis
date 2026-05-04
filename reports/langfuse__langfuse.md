@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: langfuse/langfuse
 
 **GitHub:** https://github.com/langfuse/langfuse
-**Analyzed:** 2026-05-02T01:40:32.798613+00:00
+**Analyzed:** 2026-05-04T02:04:36.535728+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 15 related issue(s)/PR(s) found. 10 related discussion(s) found. Redis modules used: redistimeseries.
+No Valkey or Redis integration detected. 15 related issue(s)/PR(s) found (1 negative, 7 inconclusive, 7 positive). 10 related discussion(s) found.
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** none
-- **Redis Modules:** redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -31,31 +31,24 @@ Manifests checked: package.json
 
 ## Phase 3: Code Search
 
-**Valkey code references:**
-- `valkey`: 1 file(s)
-  - [CONTRIBUTING.md](https://github.com/langfuse/langfuse/blob/0256db00672babdeac527221186429ef258848ca/CONTRIBUTING.md)
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 4 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [ISSUE #11603](https://github.com/langfuse/langfuse/issues/11603): bug: S3 will upload a large number of small json files, resulting in 100% inode usage. How should it be configured? (closed)
-- [ISSUE #5959](https://github.com/langfuse/langfuse/issues/5959): bug: Pod for deploying web UI is not coming up (open)
-- [ISSUE #6198](https://github.com/langfuse/langfuse/issues/6198): bug: Observations migration to Clickhouse failed to due due to deadlock (open)
-- [ISSUE #9649](https://github.com/langfuse/langfuse/issues/9649): bug: failed prisma migrations (closed)
-- [ISSUE #9443](https://github.com/langfuse/langfuse/issues/9443): bug: Redis KEYS command causes AWS Valkey Serverless compatibility issue (closed)
-- [ISSUE #7150](https://github.com/langfuse/langfuse/issues/7150): bug: Failure in Helm upgrade in self-hosted Kubernetes environment (closed)
-- [ISSUE #6667](https://github.com/langfuse/langfuse/issues/6667): bug: Unable to do helm upgrade on self hosted installation (closed)
-- [ISSUE #8731](https://github.com/langfuse/langfuse/issues/8731): bug: Self Hosted UI calls /api/trpc/prompt.create in stead of the /api/public/v2/prompts when creating prompt (closed)
-- [ISSUE #7746](https://github.com/langfuse/langfuse/issues/7746): bug: otel trace metadata not being merged in self hosted langfuse (closed)
-- [ISSUE #6765](https://github.com/langfuse/langfuse/issues/6765): bug: migration job "migrate_event_log_to_blob_storage" failed after upgrading from 3.30.0 to 3.54.0 (closed)
-- [PR #9461](https://github.com/langfuse/langfuse/pull/9461): fix(model-cache): replace KEYS with SCAN for Valkey Serverless compatibility (closed)
-- [PR #7355](https://github.com/langfuse/langfuse/pull/7355): docs: Update network diagram (closed)
-- [PR #3688](https://github.com/langfuse/langfuse/pull/3688): chore(deps): bump @aws-sdk/s3-request-presigner from 3.614.0 to 3.668.0 (closed)
-- [PR #3658](https://github.com/langfuse/langfuse/pull/3658): chore(deps): bump @aws-sdk/s3-request-presigner from 3.614.0 to 3.667.0 (closed)
-- [PR #3661](https://github.com/langfuse/langfuse/pull/3661): chore(deps): bump @aws-sdk/lib-storage from 3.645.0 to 3.667.0 (closed)
+- ❓ [ISSUE #11603](https://github.com/langfuse/langfuse/issues/11603): bug: S3 will upload a large number of small json files, resulting in 100% inode usage. How should it be configured? (closed)
+- ✅ [ISSUE #5959](https://github.com/langfuse/langfuse/issues/5959): bug: Pod for deploying web UI is not coming up (open)
+- ✅ [ISSUE #6198](https://github.com/langfuse/langfuse/issues/6198): bug: Observations migration to Clickhouse failed to due due to deadlock (open)
+- ❓ [ISSUE #9649](https://github.com/langfuse/langfuse/issues/9649): bug: failed prisma migrations (closed)
+- ❓ [ISSUE #9443](https://github.com/langfuse/langfuse/issues/9443): bug: Redis KEYS command causes AWS Valkey Serverless compatibility issue (closed)
+- ❓ [ISSUE #7150](https://github.com/langfuse/langfuse/issues/7150): bug: Failure in Helm upgrade in self-hosted Kubernetes environment (closed)
+- ⛔ [ISSUE #6667](https://github.com/langfuse/langfuse/issues/6667): bug: Unable to do helm upgrade on self hosted installation (closed)
+- ❓ [ISSUE #8731](https://github.com/langfuse/langfuse/issues/8731): bug: Self Hosted UI calls /api/trpc/prompt.create in stead of the /api/public/v2/prompts when creating prompt (closed)
+- ❓ [ISSUE #7746](https://github.com/langfuse/langfuse/issues/7746): bug: otel trace metadata not being merged in self hosted langfuse (closed)
+- ❓ [ISSUE #6765](https://github.com/langfuse/langfuse/issues/6765): bug: migration job "migrate_event_log_to_blob_storage" failed after upgrading from 3.30.0 to 3.54.0 (closed)
+- ✅ [PR #9461](https://github.com/langfuse/langfuse/pull/9461): fix(model-cache): replace KEYS with SCAN for Valkey Serverless compatibility (closed)
+- ✅ [PR #7355](https://github.com/langfuse/langfuse/pull/7355): docs: Update network diagram (closed)
+- ✅ [PR #3688](https://github.com/langfuse/langfuse/pull/3688): chore(deps): bump @aws-sdk/s3-request-presigner from 3.614.0 to 3.668.0 (closed)
+- ✅ [PR #3658](https://github.com/langfuse/langfuse/pull/3658): chore(deps): bump @aws-sdk/s3-request-presigner from 3.614.0 to 3.667.0 (closed)
+- ✅ [PR #3661](https://github.com/langfuse/langfuse/pull/3661): chore(deps): bump @aws-sdk/lib-storage from 3.645.0 to 3.667.0 (closed)
 
 **Discussions:**
 - [Discussion #12848](https://github.com/orgs/langfuse/discussions/12848): Critical metadata eviction risk in Langfuse (Valkey allkeys-lru)

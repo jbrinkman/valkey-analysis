@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: ray-project/ray
 
 **GitHub:** https://github.com/ray-project/ray
-**Analyzed:** 2026-05-02T01:40:32.842067+00:00
+**Analyzed:** 2026-05-04T02:04:36.127663+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **implied** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 4 related issue(s)/PR(s) found. 8 related extension repo(s) found (0 mention Valkey). Redis modules used: redisjson, redistimeseries.
+Implied Valkey compatibility via Redis integration. 4 related issue(s)/PR(s) found (4 positive). 8 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** extension
-- **Redis Modules:** redisjson, redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -31,17 +31,13 @@ Manifests checked: pyproject.toml
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 34 file(s)
-- `redisjson` / `rejson`: 3 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [ISSUE #53475](https://github.com/ray-project/ray/issues/53475): [Ray Serve] GCS Segmentation Fault on failed Redis requests (open)
-- [ISSUE #47447](https://github.com/ray-project/ray/issues/47447): [Ray dashboard]  Actors tab does not list actors under certain conditions (open)
-- [ISSUE #44641](https://github.com/ray-project/ray/issues/44641): [Core] Discussion to support Valkey instead of or alongside Redis  (open)
-- [PR #48225](https://github.com/ray-project/ray/pull/48225): [Core] support redis/valkey authentication with username (closed)
+- ✅ [ISSUE #53475](https://github.com/ray-project/ray/issues/53475): [Ray Serve] GCS Segmentation Fault on failed Redis requests (open)
+- ✅ [ISSUE #47447](https://github.com/ray-project/ray/issues/47447): [Ray dashboard]  Actors tab does not list actors under certain conditions (open)
+- ✅ [ISSUE #44641](https://github.com/ray-project/ray/issues/44641): [Core] Discussion to support Valkey instead of or alongside Redis  (open)
+- ✅ [PR #48225](https://github.com/ray-project/ray/pull/48225): [Core] support redis/valkey authentication with username (closed)
 
 ## Phase 5: Ecosystem
 

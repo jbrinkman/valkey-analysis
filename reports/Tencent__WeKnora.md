@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: Tencent/WeKnora
 
 **GitHub:** https://github.com/Tencent/WeKnora
-**Analyzed:** 2026-05-02T01:40:32.694018+00:00
+**Analyzed:** 2026-05-04T02:04:36.775874+00:00
 
 ## Classification
 
@@ -14,14 +14,14 @@
 
 ## Summary
 
-Explicit Valkey support detected. 1 related extension repo(s) found (0 mention Valkey). Redis modules used: redistimeseries.
+Explicit Valkey support detected. 1 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** github.com/redis/go-redis, redis
-- **Use Cases:** rate_limiting, time_series, vector_store
+- **Use Cases:** rate_limiting, vector_store
 - **Integration Type:** native
-- **Redis Modules:** redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -37,13 +37,6 @@ Manifests checked: go.mod
 - `redis` (2 occurrences)
 
 ## Phase 3: Code Search
-
-**Valkey code references:**
-- `valkey`: 1 file(s)
-  - [internal/event/event.go](https://github.com/Tencent/WeKnora/blob/58a283effeac7ccfcb2b25063233695f600237e1/internal/event/event.go)
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 1 file(s)
 
 ## Phase 4: Community Signals
 

@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: n8n-io/n8n
 
 **GitHub:** https://github.com/n8n-io/n8n
-**Analyzed:** 2026-05-03T00:56:44.314719+00:00
+**Analyzed:** 2026-05-04T02:04:35.899493+00:00
 
 ## Classification
 

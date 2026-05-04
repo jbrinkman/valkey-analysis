@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: ai-dynamo/dynamo
 
 **GitHub:** https://github.com/ai-dynamo/dynamo
-**Analyzed:** 2026-05-02T01:40:32.706468+00:00
+**Analyzed:** 2026-05-04T02:04:36.571508+00:00
 
 ## Classification
 
@@ -14,14 +14,14 @@
 
 ## Summary
 
-Explicit Valkey support detected. Redis modules used: redistimeseries.
+Explicit Valkey support detected.
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** none
-- **Redis Modules:** redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -33,9 +33,6 @@ Manifests checked: pyproject.toml, Cargo.toml
 - https://docs.langchain.com/oss/python/integrations/chat/nvidia_ai_endpoints#use-with-nvidia-dynamo
 
 ## Phase 3: Code Search
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 4 file(s)
 
 ## Phase 4: Community Signals
 

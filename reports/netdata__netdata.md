@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: netdata/netdata
 
 **GitHub:** https://github.com/netdata/netdata
-**Analyzed:** 2026-05-02T01:40:32.825486+00:00
+**Analyzed:** 2026-05-04T02:04:37.202466+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **implied** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found. 1 related extension repo(s) found (0 mention Valkey). Redis modules used: redisgraph, redisjson, redistimeseries.
+Implied Valkey compatibility via Redis integration. 1 related issue(s)/PR(s) found (1 positive). 1 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** none
-- **Redis Modules:** redisgraph, redisjson, redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -34,15 +34,10 @@ Manifests checked: None found
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 39 file(s)
-- `redisjson` / `rejson`: 1 file(s)
-- `redisgraph` / `graph.query`: 3 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #17639](https://github.com/netdata/netdata/pull/17639): Add valkey to apps_groups.conf (closed)
+- ✅ [PR #17639](https://github.com/netdata/netdata/pull/17639): Add valkey to apps_groups.conf (closed)
 
 ## Phase 5: Ecosystem
 

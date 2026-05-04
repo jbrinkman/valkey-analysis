@@ -1,20 +1,20 @@
 # Valkey Integration Analysis: apify/crawlee-python
 
 **GitHub:** https://github.com/apify/crawlee-python
-**Analyzed:** 2026-05-02T01:40:32.714664+00:00
+**Analyzed:** 2026-05-04T02:04:36.318736+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found. 8 related extension repo(s) found (0 mention Valkey). Redis modules used: redistimeseries.
+Redis integration detected but uses Valkey-incompatible module(s): redistimeseries. Redis dependencies: redis. 1 related issue(s)/PR(s) found (1 positive). 8 related extension repo(s) found (0 mention Valkey). Redis modules used: redistimeseries.
 
 ## Integration Details
 
@@ -34,13 +34,10 @@ Manifests checked: pyproject.toml
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 3 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #1406](https://github.com/apify/crawlee-python/pull/1406): feat:  Add `RedisStorageClient` based on Redis v8.0+ (closed)
+- ✅ [PR #1406](https://github.com/apify/crawlee-python/pull/1406): feat:  Add `RedisStorageClient` based on Redis v8.0+ (closed)
 
 ## Phase 5: Ecosystem
 

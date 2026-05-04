@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: spring-projects/spring-boot
 
 **GitHub:** https://github.com/spring-projects/spring-boot
-**Analyzed:** 2026-05-02T01:40:32.856108+00:00
+**Analyzed:** 2026-05-04T02:04:36.416479+00:00
 
 ## Classification
 
@@ -14,14 +14,14 @@
 
 ## Summary
 
-Explicit Valkey support detected. 3 related extension repo(s) found (1 mention Valkey). Redis modules used: redisjson, redistimeseries.
+Explicit Valkey support detected. 3 related extension repo(s) found (1 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** extension
-- **Redis Modules:** redisjson, redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -30,10 +30,6 @@ Manifests checked: build.gradle
 ## Phase 2: Documentation Scan
 
 ## Phase 3: Code Search
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 81 file(s)
-- `redisjson` / `rejson`: 24 file(s)
 
 ## Phase 4: Community Signals
 

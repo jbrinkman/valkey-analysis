@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: Infisical/infisical
 
 **GitHub:** https://github.com/Infisical/infisical
-**Analyzed:** 2026-05-02T01:40:32.618154+00:00
+**Analyzed:** 2026-05-04T02:04:36.677387+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found. 2 related extension repo(s) found (0 mention Valkey). Redis modules used: redisjson, redistimeseries.
+No Valkey or Redis integration detected. 1 related issue(s)/PR(s) found (1 positive). 2 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** none
-- **Redis Modules:** redisjson, redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -31,20 +31,10 @@ Manifests checked: package.json
 
 ## Phase 3: Code Search
 
-**Valkey code references:**
-- `valkey`: 8 file(s)
-  - [docs/documentation/platform/pam/getting-started/resources/redis.mdx](https://github.com/Infisical/infisical/blob/3567c8c5d14c495d189ca5d0dff0b4731930ebb6/docs/documentation/platform/pam/getting-started/resources/redis.mdx)
-  - [frontend/src/hooks/api/secretApproval/queries.tsx](https://github.com/Infisical/infisical/blob/3567c8c5d14c495d189ca5d0dff0b4731930ebb6/frontend/src/hooks/api/secretApproval/queries.tsx)
-  - [frontend/src/hooks/api/secretApproval/mutation.tsx](https://github.com/Infisical/infisical/blob/3567c8c5d14c495d189ca5d0dff0b4731930ebb6/frontend/src/hooks/api/secretApproval/mutation.tsx)
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 6 file(s)
-- `redisjson` / `rejson`: 1 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #5133](https://github.com/Infisical/infisical/pull/5133): docs: add redis PAM document (closed)
+- ✅ [PR #5133](https://github.com/Infisical/infisical/pull/5133): docs: add redis PAM document (closed)
 
 ## Phase 5: Ecosystem
 

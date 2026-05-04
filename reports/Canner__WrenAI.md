@@ -1,20 +1,20 @@
 # Valkey Integration Analysis: Canner/WrenAI
 
 **GitHub:** https://github.com/Canner/WrenAI
-**Analyzed:** 2026-05-02T01:40:32.487709+00:00
+**Analyzed:** 2026-05-04T02:04:36.918243+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found.
+No Valkey or Redis integration detected. 1 related issue(s)/PR(s) found (1 positive).
 
 ## Integration Details
 
@@ -34,7 +34,7 @@ Manifests checked: None found
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #1989](https://github.com/Canner/WrenAI/pull/1989): chore(wren-ai-service): bump python-socketio from 5.13.0 to 5.14.0 in /wren-ai-service in the pip group across 1 directory (closed)
+- ✅ [PR #1989](https://github.com/Canner/WrenAI/pull/1989): chore(wren-ai-service): bump python-socketio from 5.13.0 to 5.14.0 in /wren-ai-service in the pip group across 1 directory (closed)
 
 ## Phase 5: Ecosystem
 

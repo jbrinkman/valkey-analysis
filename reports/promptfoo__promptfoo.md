@@ -1,20 +1,20 @@
 # Valkey Integration Analysis: promptfoo/promptfoo
 
 **GitHub:** https://github.com/promptfoo/promptfoo
-**Analyzed:** 2026-05-02T01:40:32.837670+00:00
+**Analyzed:** 2026-05-04T02:04:37.210319+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found.
+No Valkey or Redis integration detected. 1 related issue(s)/PR(s) found (1 positive).
 
 ## Integration Details
 
@@ -34,7 +34,7 @@ Manifests checked: package.json
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #1845](https://github.com/promptfoo/promptfoo/pull/1845): chore(deps-dev): bump @aws-sdk/client-bedrock-runtime from 3.666.0 to 3.667.0 (closed)
+- ✅ [PR #1845](https://github.com/promptfoo/promptfoo/pull/1845): chore(deps-dev): bump @aws-sdk/client-bedrock-runtime from 3.666.0 to 3.667.0 (closed)
 
 ## Phase 5: Ecosystem
 

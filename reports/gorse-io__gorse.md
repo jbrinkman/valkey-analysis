@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: gorse-io/gorse
 
 **GitHub:** https://github.com/gorse-io/gorse
-**Analyzed:** 2026-05-03T00:56:44.341623+00:00
+**Analyzed:** 2026-05-04T01:58:27.414390+00:00
 
 ## Classification
 

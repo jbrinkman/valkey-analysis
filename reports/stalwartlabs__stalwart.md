@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: stalwartlabs/stalwart
 
 **GitHub:** https://github.com/stalwartlabs/stalwart
-**Analyzed:** 2026-05-02T01:40:32.856775+00:00
+**Analyzed:** 2026-05-04T02:04:37.250226+00:00
 
 ## Classification
 
@@ -14,14 +14,14 @@
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found. 7 related discussion(s) found. Redis modules used: redistimeseries.
+Explicit Valkey support detected. 1 related issue(s)/PR(s) found (1 inconclusive). 7 related discussion(s) found.
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** none
-- **Redis Modules:** redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -34,13 +34,10 @@ Manifests checked: Cargo.toml
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 1 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [ISSUE #2581](https://github.com/stalwartlabs/stalwart/issues/2581): 🪲: failed valkey/redis call make all api requests return 500 (closed)
+- ❓ [ISSUE #2581](https://github.com/stalwartlabs/stalwart/issues/2581): 🪲: failed valkey/redis call make all api requests return 500 (closed)
 
 **Discussions:**
 - [Discussion #2927](https://github.com/stalwartlabs/stalwart/discussions/2927): Incorrect date-time format used in WebDAV: RFC 1123 instead of RFC 2616

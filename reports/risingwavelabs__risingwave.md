@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: risingwavelabs/risingwave
 
 **GitHub:** https://github.com/risingwavelabs/risingwave
-**Analyzed:** 2026-05-02T01:40:32.844875+00:00
+**Analyzed:** 2026-05-04T02:04:37.274967+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **implied** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found. Redis modules used: redistimeseries.
+Implied Valkey compatibility via Redis integration. Redis dependencies: redis. 1 related issue(s)/PR(s) found (1 positive).
 
 ## Integration Details
 
 - **Client Libraries:** redis
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** native
-- **Redis Modules:** redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -34,13 +34,10 @@ Manifests checked: Cargo.toml
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 12 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #21050](https://github.com/risingwavelabs/risingwave/pull/21050): chore(deps): Bump redis from 0.25.4 to 0.28.2 (closed)
+- ✅ [PR #21050](https://github.com/risingwavelabs/risingwave/pull/21050): chore(deps): Bump redis from 0.25.4 to 0.28.2 (closed)
 
 ## Phase 5: Ecosystem
 

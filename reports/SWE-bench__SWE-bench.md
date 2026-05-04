@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: SWE-bench/SWE-bench
 
 **GitHub:** https://github.com/SWE-bench/SWE-bench
-**Analyzed:** 2026-05-02T01:40:32.687585+00:00
+**Analyzed:** 2026-05-04T02:04:37.334929+00:00
 
 ## Classification
 
@@ -33,11 +33,6 @@ Manifests checked: pyproject.toml
 - https://www.swebench.com
 
 ## Phase 3: Code Search
-
-**Valkey code references:**
-- `valkey`: 2 file(s)
-  - [swebench/harness/constants/c.py](https://github.com/SWE-bench/SWE-bench/blob/f7bbbb2ccdf479001d6467c9e34af59e44a840f9/swebench/harness/constants/c.py)
-  - [swebench/harness/log_parsers/c.py](https://github.com/SWE-bench/SWE-bench/blob/f7bbbb2ccdf479001d6467c9e34af59e44a840f9/swebench/harness/log_parsers/c.py)
 
 ## Phase 4: Community Signals
 

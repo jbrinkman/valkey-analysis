@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: microsoft/agent-framework
 
 **GitHub:** https://github.com/microsoft/agent-framework
-**Analyzed:** 2026-05-02T01:40:32.813370+00:00
+**Analyzed:** 2026-05-04T02:04:35.890357+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **implied** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 9 related issue(s)/PR(s) found. 5 related extension repo(s) found (0 mention Valkey). Redis modules used: redisjson, redistimeseries.
+Implied Valkey compatibility via Redis integration. 9 related issue(s)/PR(s) found (9 positive). 5 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** extension
-- **Redis Modules:** redisjson, redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -31,22 +31,18 @@ Manifests checked: None found
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 126 file(s)
-- `redisjson` / `rejson`: 3 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [ISSUE #5544](https://github.com/microsoft/agent-framework/issues/5544): .NET: [Feature]: [.NET] Add ValkeyStreamBuffer for resumable agent streaming via Valkey Streams (open)
-- [ISSUE #5517](https://github.com/microsoft/agent-framework/issues/5517): .NET: [Feature]: [Python] Add ValkeyStreamBuffer — resumable streaming via Valkey Streams for agent-framework-valkey (open)
-- [ISSUE #5445](https://github.com/microsoft/agent-framework/issues/5445): Python: .NET: [Feature]: Add Valkey Context Provider and Chat Message Store (open)
-- [ISSUE #5260](https://github.com/microsoft/agent-framework/issues/5260): Python: [Feature]: Add Valkey Context Provider and Chat Message Store (open)
-- [PR #5576](https://github.com/microsoft/agent-framework/pull/5576): .NET: valkey streaming support dotnet (open)
-- [PR #5543](https://github.com/microsoft/agent-framework/pull/5543): Python: adds valkey streaming support (python)- issue 5517 (open)
-- [PR #5542](https://github.com/microsoft/agent-framework/pull/5542): .NET: Adds Valkey to chat message history - issue 5445 (open)
-- [PR #5473](https://github.com/microsoft/agent-framework/pull/5473): Python: issue-5260 adds valkey message history (open)
-- [PR #5513](https://github.com/microsoft/agent-framework/pull/5513): .NET: Adds Valkey to chat message history - issue #5445 (closed)
+- ✅ [ISSUE #5544](https://github.com/microsoft/agent-framework/issues/5544): .NET: [Feature]: [.NET] Add ValkeyStreamBuffer for resumable agent streaming via Valkey Streams (open)
+- ✅ [ISSUE #5517](https://github.com/microsoft/agent-framework/issues/5517): .NET: [Feature]: [Python] Add ValkeyStreamBuffer — resumable streaming via Valkey Streams for agent-framework-valkey (open)
+- ✅ [ISSUE #5445](https://github.com/microsoft/agent-framework/issues/5445): Python: .NET: [Feature]: Add Valkey Context Provider and Chat Message Store (open)
+- ✅ [ISSUE #5260](https://github.com/microsoft/agent-framework/issues/5260): Python: [Feature]: Add Valkey Context Provider and Chat Message Store (open)
+- ✅ [PR #5576](https://github.com/microsoft/agent-framework/pull/5576): .NET: valkey streaming support dotnet (open)
+- ✅ [PR #5543](https://github.com/microsoft/agent-framework/pull/5543): Python: adds valkey streaming support (python)- issue 5517 (open)
+- ✅ [PR #5542](https://github.com/microsoft/agent-framework/pull/5542): .NET: Adds Valkey to chat message history - issue 5445 (open)
+- ✅ [PR #5473](https://github.com/microsoft/agent-framework/pull/5473): Python: issue-5260 adds valkey message history (open)
+- ✅ [PR #5513](https://github.com/microsoft/agent-framework/pull/5513): .NET: Adds Valkey to chat message history - issue #5445 (closed)
 
 ## Phase 5: Ecosystem
 

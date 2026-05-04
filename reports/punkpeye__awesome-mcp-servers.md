@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: punkpeye/awesome-mcp-servers
 
 **GitHub:** https://github.com/punkpeye/awesome-mcp-servers
-**Analyzed:** 2026-05-02T01:40:32.838795+00:00
+**Analyzed:** 2026-05-04T02:04:37.458105+00:00
 
 ## Classification
 
@@ -14,7 +14,7 @@
 
 ## Summary
 
-Explicit Valkey support detected. 5 related issue(s)/PR(s) found.
+Explicit Valkey support detected. 5 related issue(s)/PR(s) found (5 positive).
 
 ## Integration Details
 
@@ -40,20 +40,14 @@ Manifests checked: None found
 
 ## Phase 3: Code Search
 
-**Valkey code references:**
-- `valkey`: 7 file(s)
-  - [README-zh.md](https://github.com/punkpeye/awesome-mcp-servers/blob/d16b4648b32909b344dc7c2d3f8aa46c44a7b683/README-zh.md)
-  - [README-ko.md](https://github.com/punkpeye/awesome-mcp-servers/blob/d16b4648b32909b344dc7c2d3f8aa46c44a7b683/README-ko.md)
-  - [README-th.md](https://github.com/punkpeye/awesome-mcp-servers/blob/d16b4648b32909b344dc7c2d3f8aa46c44a7b683/README-th.md)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #5174](https://github.com/punkpeye/awesome-mcp-servers/pull/5174): Add cachly-dev/mcp-server to Knowledge & Memory (open)
-- [PR #2686](https://github.com/punkpeye/awesome-mcp-servers/pull/2686): Add NodeOps-app/createos-mcp — Full-stack deployment platform (75+ tools) (closed)
-- [PR #4856](https://github.com/punkpeye/awesome-mcp-servers/pull/4856): Add Celiums Memory MCP server (closed)
-- [PR #3168](https://github.com/punkpeye/awesome-mcp-servers/pull/3168): Added BetterDB under developer tools (closed)
-- [PR #1880](https://github.com/punkpeye/awesome-mcp-servers/pull/1880): Add Eyevinn Open Source Cloud MCP server (closed)
+- ✅ [PR #5174](https://github.com/punkpeye/awesome-mcp-servers/pull/5174): Add cachly-dev/mcp-server to Knowledge & Memory (open)
+- ✅ [PR #2686](https://github.com/punkpeye/awesome-mcp-servers/pull/2686): Add NodeOps-app/createos-mcp — Full-stack deployment platform (75+ tools) (closed)
+- ✅ [PR #4856](https://github.com/punkpeye/awesome-mcp-servers/pull/4856): Add Celiums Memory MCP server (closed)
+- ✅ [PR #3168](https://github.com/punkpeye/awesome-mcp-servers/pull/3168): Added BetterDB under developer tools (closed)
+- ✅ [PR #1880](https://github.com/punkpeye/awesome-mcp-servers/pull/1880): Add Eyevinn Open Source Cloud MCP server (closed)
 
 ## Phase 5: Ecosystem
 

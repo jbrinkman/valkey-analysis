@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: deepset-ai/haystack
 
 **GitHub:** https://github.com/deepset-ai/haystack
-**Analyzed:** 2026-05-02T01:40:32.746021+00:00
+**Analyzed:** 2026-05-04T02:04:35.792876+00:00
 
 ## Classification
 
@@ -14,7 +14,7 @@
 
 ## Summary
 
-Explicit Valkey support detected. 5 related issue(s)/PR(s) found. 3 related extension repo(s) found (1 mention Valkey).
+Explicit Valkey support detected. 5 related issue(s)/PR(s) found (5 positive). 3 related extension repo(s) found (1 mention Valkey).
 
 ## Integration Details
 
@@ -34,11 +34,11 @@ Manifests checked: pyproject.toml
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [ISSUE #10956](https://github.com/deepset-ai/haystack/issues/10956): Resolve in-place dataclass mutations across core-integrations (open)
-- [PR #10806](https://github.com/deepset-ai/haystack/pull/10806): test: extend document stores Mixin tests (closed)
-- [PR #10757](https://github.com/deepset-ai/haystack/pull/10757): docs: sync Core Integrations API reference (valkey) on Docusaurus (closed)
-- [PR #10471](https://github.com/deepset-ai/haystack/pull/10471): docs: sync Core Integrations API reference (valkey) on Docusaurus (closed)
-- [PR #10470](https://github.com/deepset-ai/haystack/pull/10470): docs: sync Core Integrations API reference (valkey) on Docusaurus (closed)
+- ✅ [ISSUE #10956](https://github.com/deepset-ai/haystack/issues/10956): Resolve in-place dataclass mutations across core-integrations (open)
+- ✅ [PR #10806](https://github.com/deepset-ai/haystack/pull/10806): test: extend document stores Mixin tests (closed)
+- ✅ [PR #10757](https://github.com/deepset-ai/haystack/pull/10757): docs: sync Core Integrations API reference (valkey) on Docusaurus (closed)
+- ✅ [PR #10471](https://github.com/deepset-ai/haystack/pull/10471): docs: sync Core Integrations API reference (valkey) on Docusaurus (closed)
+- ✅ [PR #10470](https://github.com/deepset-ai/haystack/pull/10470): docs: sync Core Integrations API reference (valkey) on Docusaurus (closed)
 
 ## Phase 5: Ecosystem
 
