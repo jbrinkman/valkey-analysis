@@ -1,20 +1,20 @@
 # Valkey Integration Analysis: open-policy-agent/opa
 
 **GitHub:** https://github.com/open-policy-agent/opa
-**Analyzed:** 2026-05-02T01:40:32.830580+00:00
+**Analyzed:** 2026-05-04T02:04:37.345982+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found. 2 related extension repo(s) found (0 mention Valkey).
+No Valkey or Redis integration detected. 1 related issue(s)/PR(s) found (1 positive). 2 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
@@ -34,7 +34,7 @@ Manifests checked: go.mod
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #8032](https://github.com/open-policy-agent/opa/pull/8032): build(deps): bump the dependencies group across 2 directories with 10 updates (closed)
+- ✅ [PR #8032](https://github.com/open-policy-agent/opa/pull/8032): build(deps): bump the dependencies group across 2 directories with 10 updates (closed)
 
 ## Phase 5: Ecosystem
 

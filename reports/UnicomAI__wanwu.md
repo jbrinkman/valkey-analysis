@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: UnicomAI/wanwu
 
 **GitHub:** https://github.com/UnicomAI/wanwu
-**Analyzed:** 2026-05-02T01:40:32.697055+00:00
+**Analyzed:** 2026-05-04T02:04:36.166066+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **implied** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. Redis modules used: redistimeseries.
+Implied Valkey compatibility via Redis integration. Redis dependencies: redis, github.com/redis/go-redis.
 
 ## Integration Details
 
 - **Client Libraries:** github.com/redis/go-redis, redis
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** native
-- **Redis Modules:** redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -34,13 +34,6 @@ Manifests checked: go.mod
 ## Phase 2: Documentation Scan
 
 ## Phase 3: Code Search
-
-**Valkey code references:**
-- `valkey`: 1 file(s)
-  - [configs/microservice/bff-service/configs/agent-skills/minimax/fullstack-dev/references/technology-selection.md](https://github.com/UnicomAI/wanwu/blob/2b42bb911e3ff6ecfec3b49312742fde4408765d/configs/microservice/bff-service/configs/agent-skills/minimax/fullstack-dev/references/technology-selection.md)
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 5 file(s)
 
 ## Phase 4: Community Signals
 

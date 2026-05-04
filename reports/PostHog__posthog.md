@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: PostHog/posthog
 
 **GitHub:** https://github.com/PostHog/posthog
-**Analyzed:** 2026-05-02T01:40:32.682767+00:00
+**Analyzed:** 2026-05-04T02:04:36.792818+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **implied** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 2 related issue(s)/PR(s) found. 6 related extension repo(s) found (0 mention Valkey). Redis modules used: redisjson, redistimeseries.
+Implied Valkey compatibility via Redis integration. Redis dependencies: redis. 2 related issue(s)/PR(s) found (2 positive). 6 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** redis
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** native
-- **Redis Modules:** redisjson, redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -34,19 +34,11 @@ Manifests checked: pyproject.toml, package.json
 
 ## Phase 3: Code Search
 
-**Valkey code references:**
-- `valkey`: 1 file(s)
-  - [frontend/src/lib/components/IntervalFilter/intervals.ts](https://github.com/PostHog/posthog/blob/a72cf32c9da6196e587956d58763e47676c486d5/frontend/src/lib/components/IntervalFilter/intervals.ts)
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 44 file(s)
-- `redisjson` / `rejson`: 1 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #43538](https://github.com/PostHog/posthog/pull/43538): feat: increment issue buckets in cymbal (closed)
-- [PR #47936](https://github.com/PostHog/posthog/pull/47936): feat: migrate query cache to dedicated cluster (closed)
+- ✅ [PR #43538](https://github.com/PostHog/posthog/pull/43538): feat: increment issue buckets in cymbal (closed)
+- ✅ [PR #47936](https://github.com/PostHog/posthog/pull/47936): feat: migrate query cache to dedicated cluster (closed)
 
 ## Phase 5: Ecosystem
 

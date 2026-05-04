@@ -1,20 +1,20 @@
 # Valkey Integration Analysis: EvanLi/Github-Ranking
 
 **GitHub:** https://github.com/EvanLi/Github-Ranking
-**Analyzed:** 2026-05-02T01:40:32.549205+00:00
+**Analyzed:** 2026-05-04T02:04:37.577778+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **implied** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected.
+Implied Valkey compatibility via Redis integration.
 
 ## Integration Details
 
@@ -33,11 +33,6 @@ Manifests checked: requirements.txt, Gemfile
 - `redis` (4 occurrences)
 
 ## Phase 3: Code Search
-
-**Valkey code references:**
-- `valkey`: 2 file(s)
-  - [Top100/C.md](https://github.com/EvanLi/Github-Ranking/blob/21a85d66dc5376adaa1bc71af787624bc8a7fa57/Top100/C.md)
-  - [Top100/Java.md](https://github.com/EvanLi/Github-Ranking/blob/21a85d66dc5376adaa1bc71af787624bc8a7fa57/Top100/Java.md)
 
 ## Phase 4: Community Signals
 

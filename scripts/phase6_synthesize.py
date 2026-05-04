@@ -124,18 +124,20 @@ def classify_valkey_support(phases: dict) -> str:
     modules_used = detect_redis_modules(phases)
     incompatible = [m for m in modules_used if m in VALKEY_INCOMPATIBLE_MODULES]
 
-    # Hard explicit: Valkey dependency or Valkey code in the repo itself
-    # These are strong enough to override incompatible modules — the project
-    # has deliberately added Valkey support
+    # Hard explicit: Valkey dependency in package manifest
+    # This is the strongest signal — the project has deliberately added Valkey
     if p1.get("valkey_deps"):
         return "explicit"
-    if p3.get("has_valkey_code"):
-        return "explicit"
 
-    # Soft explicit: docs, issues, extensions mention Valkey
+    # Soft explicit: docs, code references, extensions mention Valkey
     # These can be false positives, so incompatible modules disqualify
     if incompatible:
         return "none"
+
+    # Code references: require multiple files to reduce false positives
+    # from incidental mentions in comments, docs, or unrelated code
+    if p3.get("has_valkey_code") and p3.get("valkey_total_files", 0) >= 3:
+        return "explicit"
 
     if p2.get("has_valkey_signal"):
         valkey_mentions = p2.get("valkey_mentions", [])

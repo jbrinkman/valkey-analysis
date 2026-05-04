@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: triggerdotdev/trigger.dev
 
 **GitHub:** https://github.com/triggerdotdev/trigger.dev
-**Analyzed:** 2026-05-02T01:40:32.871071+00:00
+**Analyzed:** 2026-05-04T02:04:36.178700+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **implied** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 2 related issue(s)/PR(s) found. 1 related extension repo(s) found (0 mention Valkey). Redis modules used: redisjson, redistimeseries.
+Implied Valkey compatibility via Redis integration. 2 related issue(s)/PR(s) found (2 positive). 1 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** none
-- **Redis Modules:** redisjson, redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -31,15 +31,11 @@ Manifests checked: package.json
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 4 file(s)
-- `redisjson` / `rejson`: 3 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #1575](https://github.com/triggerdotdev/trigger.dev/pull/1575): Run Engine 2.0 (alpha) (closed)
-- [PR #1650](https://github.com/triggerdotdev/trigger.dev/pull/1650): Support redis/valkey cluster mode (closed)
+- ✅ [PR #1575](https://github.com/triggerdotdev/trigger.dev/pull/1575): Run Engine 2.0 (alpha) (closed)
+- ✅ [PR #1650](https://github.com/triggerdotdev/trigger.dev/pull/1650): Support redis/valkey cluster mode (closed)
 
 ## Phase 5: Ecosystem
 

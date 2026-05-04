@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: elastic/beats
 
 **GitHub:** https://github.com/elastic/beats
-**Analyzed:** 2026-05-02T01:40:32.750504+00:00
+**Analyzed:** 2026-05-04T02:04:36.878047+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 2 related issue(s)/PR(s) found. 9 related extension repo(s) found (0 mention Valkey). Redis modules used: redisbloom, redistimeseries.
+Redis integration detected but uses Valkey-incompatible module(s): redistimeseries. Redis dependencies: redis, github.com/gomodule/redigo. 2 related issue(s)/PR(s) found (2 positive). 9 related extension repo(s) found (0 mention Valkey). Redis modules used: redistimeseries.
 
 ## Integration Details
 
 - **Client Libraries:** github.com/gomodule/redigo, redis
 - **Use Cases:** time_series
 - **Integration Type:** native
-- **Redis Modules:** redisbloom, redistimeseries
+- **Redis Modules:** redistimeseries
 
 ## Phase 1: Dependency Scan
 
@@ -35,15 +35,11 @@ Manifests checked: go.mod
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 44 file(s)
-- `redisbloom` / `bf.add`: 9 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #47022](https://github.com/elastic/beats/pull/47022): build(deps): bump github.com/gomodule/redigo from 1.9.2 to 1.9.3 (closed)
-- [PR #41507](https://github.com/elastic/beats/pull/41507): [feat:filebeat/input/redis/slowlog] Add client address and name to submitted slowlogs (closed)
+- ✅ [PR #47022](https://github.com/elastic/beats/pull/47022): build(deps): bump github.com/gomodule/redigo from 1.9.2 to 1.9.3 (closed)
+- ✅ [PR #41507](https://github.com/elastic/beats/pull/41507): [feat:filebeat/input/redis/slowlog] Add client address and name to submitted slowlogs (closed)
 
 ## Phase 5: Ecosystem
 

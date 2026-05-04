@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: grafana/loki
 
 **GitHub:** https://github.com/grafana/loki
-**Analyzed:** 2026-05-02T01:40:32.773655+00:00
+**Analyzed:** 2026-05-04T02:04:36.892077+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 7 related issue(s)/PR(s) found. 10 related extension repo(s) found (0 mention Valkey). Redis modules used: redisbloom, redisjson, redistimeseries.
+Redis integration detected but uses Valkey-incompatible module(s): redistimeseries. Redis dependencies: redis, github.com/redis/go-redis. 7 related issue(s)/PR(s) found (1 inconclusive, 6 positive). 10 related extension repo(s) found (0 mention Valkey). Redis modules used: redistimeseries.
 
 ## Integration Details
 
 - **Client Libraries:** github.com/redis/go-redis, redis
 - **Use Cases:** time_series
 - **Integration Type:** extension
-- **Redis Modules:** redisbloom, redisjson, redistimeseries
+- **Redis Modules:** redistimeseries
 
 ## Phase 1: Dependency Scan
 
@@ -35,21 +35,16 @@ Manifests checked: go.mod
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 43 file(s)
-- `redisjson` / `rejson`: 14 file(s)
-- `redisbloom` / `bf.add`: 2 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [ISSUE #18063](https://github.com/grafana/loki/issues/18063): helm chart: accept redis password as an existing secret or env var (closed)
-- [ISSUE #19923](https://github.com/grafana/loki/issues/19923): `3.6.0` loki failing health checks with 404 error (open)
-- [PR #20739](https://github.com/grafana/loki/pull/20739): chore(deps): update terraform aws to ~> 6.31.0 (main) (closed)
-- [PR #17310](https://github.com/grafana/loki/pull/17310): chore(deps): update terraform aws to ~> 5.95.0 (main) (closed)
-- [PR #15689](https://github.com/grafana/loki/pull/15689): chore(deps): update terraform aws to ~> 5.83.0 (closed)
-- [PR #15517](https://github.com/grafana/loki/pull/15517): chore(deps): update terraform aws to ~> 5.82.0 (closed)
-- [PR #14717](https://github.com/grafana/loki/pull/14717): chore(deps): update terraform aws to ~> 5.74.0 (closed)
+- ❓ [ISSUE #18063](https://github.com/grafana/loki/issues/18063): helm chart: accept redis password as an existing secret or env var (closed)
+- ✅ [ISSUE #19923](https://github.com/grafana/loki/issues/19923): `3.6.0` loki failing health checks with 404 error (open)
+- ✅ [PR #20739](https://github.com/grafana/loki/pull/20739): chore(deps): update terraform aws to ~> 6.31.0 (main) (closed)
+- ✅ [PR #17310](https://github.com/grafana/loki/pull/17310): chore(deps): update terraform aws to ~> 5.95.0 (main) (closed)
+- ✅ [PR #15689](https://github.com/grafana/loki/pull/15689): chore(deps): update terraform aws to ~> 5.83.0 (closed)
+- ✅ [PR #15517](https://github.com/grafana/loki/pull/15517): chore(deps): update terraform aws to ~> 5.82.0 (closed)
+- ✅ [PR #14717](https://github.com/grafana/loki/pull/14717): chore(deps): update terraform aws to ~> 5.74.0 (closed)
 
 ## Phase 5: Ecosystem
 

@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: StarRocks/starrocks
 
 **GitHub:** https://github.com/StarRocks/starrocks
-**Analyzed:** 2026-05-02T01:40:32.692028+00:00
+**Analyzed:** 2026-05-04T02:04:37.661490+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 2 related extension repo(s) found (0 mention Valkey). Redis modules used: redisbloom, redisjson, redistimeseries.
+No Valkey or Redis integration detected. 2 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** none
-- **Redis Modules:** redisbloom, redisjson, redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -30,15 +30,6 @@ Manifests checked: None found
 ## Phase 2: Documentation Scan
 
 ## Phase 3: Code Search
-
-**Valkey code references:**
-- `valkey`: 1 file(s)
-  - [fe/fe-core/src/test/java/com/starrocks/http/rest/v2/TableSchemaActionTest.java](https://github.com/StarRocks/starrocks/blob/2bb40627a036cfe26f2cb8305d2eb27d57026113/fe/fe-core/src/test/java/com/starrocks/http/rest/v2/TableSchemaActionTest.java)
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 317 file(s)
-- `redisjson` / `rejson`: 1 file(s)
-- `redisbloom` / `bf.add`: 1 file(s)
 
 ## Phase 4: Community Signals
 

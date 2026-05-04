@@ -1,20 +1,20 @@
 # Valkey Integration Analysis: aws-neuron/aws-neuron-sdk
 
 **GitHub:** https://github.com/aws-neuron/aws-neuron-sdk
-**Analyzed:** 2026-05-02T01:40:32.718312+00:00
+**Analyzed:** 2026-05-04T02:04:37.413268+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. Redis modules used: redistimeseries.
+Redis integration detected but uses Valkey-incompatible module(s): redistimeseries. Redis modules used: redistimeseries.
 
 ## Integration Details
 
@@ -33,9 +33,6 @@ Manifests checked: requirements.txt
 - https://aws.amazon.com/machine-learning/neuron/
 
 ## Phase 3: Code Search
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 5 file(s)
 
 ## Phase 4: Community Signals
 

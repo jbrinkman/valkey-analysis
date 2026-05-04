@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: HKUDS/ClawWork
 
 **GitHub:** https://github.com/HKUDS/ClawWork
-**Analyzed:** 2026-05-02T01:40:32.604689+00:00
+**Analyzed:** 2026-05-04T02:04:37.241106+00:00
 
 ## Classification
 
@@ -14,14 +14,14 @@
 
 ## Summary
 
-Explicit Valkey support detected. Redis modules used: redistimeseries.
+Explicit Valkey support detected.
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** none
-- **Redis Modules:** redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -30,9 +30,6 @@ Manifests checked: requirements.txt, setup.py
 ## Phase 2: Documentation Scan
 
 ## Phase 3: Code Search
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 1 file(s)
 
 ## Phase 4: Community Signals
 

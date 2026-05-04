@@ -1,20 +1,20 @@
 # Valkey Integration Analysis: getarcaneapp/arcane
 
 **GitHub:** https://github.com/getarcaneapp/arcane
-**Analyzed:** 2026-05-02T01:40:32.762405+00:00
+**Analyzed:** 2026-05-04T02:04:37.604918+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 4 related issue(s)/PR(s) found.
+No Valkey or Redis integration detected. 4 related issue(s)/PR(s) found (2 inconclusive, 2 positive).
 
 ## Integration Details
 
@@ -34,10 +34,10 @@ Manifests checked: package.json
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [ISSUE #2031](https://github.com/getarcaneapp/arcane/issues/2031): 🐞 Bug: Code mirror editor doing wrong intendation for new lines (closed)
-- [ISSUE #233](https://github.com/getarcaneapp/arcane/issues/233): 🐞 Bug: Failed to deploy stack (HTTP Code 400) bad parameter invalid reference format (closed)
-- [PR #86](https://github.com/getarcaneapp/arcane/pull/86): feat: user authentication (closed)
-- [PR #72](https://github.com/getarcaneapp/arcane/pull/72): docs: setup documentation WIP  (closed)
+- ❓ [ISSUE #2031](https://github.com/getarcaneapp/arcane/issues/2031): 🐞 Bug: Code mirror editor doing wrong intendation for new lines (closed)
+- ❓ [ISSUE #233](https://github.com/getarcaneapp/arcane/issues/233): 🐞 Bug: Failed to deploy stack (HTTP Code 400) bad parameter invalid reference format (closed)
+- ✅ [PR #86](https://github.com/getarcaneapp/arcane/pull/86): feat: user authentication (closed)
+- ✅ [PR #72](https://github.com/getarcaneapp/arcane/pull/72): docs: setup documentation WIP  (closed)
 
 ## Phase 5: Ecosystem
 

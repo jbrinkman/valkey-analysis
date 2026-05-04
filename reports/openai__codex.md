@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: openai/codex
 
 **GitHub:** https://github.com/openai/codex
-**Analyzed:** 2026-05-02T01:40:32.831074+00:00
+**Analyzed:** 2026-05-04T02:04:37.632224+00:00
 
 ## Classification
 
@@ -14,14 +14,14 @@
 
 ## Summary
 
-Explicit Valkey support detected. 3 related extension repo(s) found (0 mention Valkey). Redis modules used: redistimeseries.
+Explicit Valkey support detected. 3 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** none
-- **Redis Modules:** redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -30,15 +30,6 @@ Manifests checked: package.json
 ## Phase 2: Documentation Scan
 
 ## Phase 3: Code Search
-
-**Valkey code references:**
-- `valkey`: 14 file(s)
-  - [codex-rs/core/src/tools/runtimes/shell.rs](https://github.com/openai/codex/blob/443f6b831e47a91e17a824beea493854f4df269c/codex-rs/core/src/tools/runtimes/shell.rs)
-  - [codex-rs/core/src/tools/network_approval.rs](https://github.com/openai/codex/blob/443f6b831e47a91e17a824beea493854f4df269c/codex-rs/core/src/tools/network_approval.rs)
-  - [codex-rs/core/src/mcp_tool_call.rs](https://github.com/openai/codex/blob/443f6b831e47a91e17a824beea493854f4df269c/codex-rs/core/src/mcp_tool_call.rs)
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 1 file(s)
 
 ## Phase 4: Community Signals
 

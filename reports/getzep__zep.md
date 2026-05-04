@@ -1,20 +1,20 @@
 # Valkey Integration Analysis: getzep/zep
 
 **GitHub:** https://github.com/getzep/zep
-**Analyzed:** 2026-05-02T01:40:32.763180+00:00
+**Analyzed:** 2026-05-04T02:04:37.385420+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found.
+No Valkey or Redis integration detected. 1 related issue(s)/PR(s) found (1 positive).
 
 ## Integration Details
 
@@ -34,7 +34,7 @@ Manifests checked: pyproject.toml
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #438](https://github.com/getzep/zep/pull/438): chore(deps): bump python-socketio from 5.13.0 to 5.14.0 in /examples/python (closed)
+- ✅ [PR #438](https://github.com/getzep/zep/pull/438): chore(deps): bump python-socketio from 5.13.0 to 5.14.0 in /examples/python (closed)
 
 ## Phase 5: Ecosystem
 

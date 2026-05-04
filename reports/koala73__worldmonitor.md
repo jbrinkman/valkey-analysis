@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: koala73/worldmonitor
 
 **GitHub:** https://github.com/koala73/worldmonitor
-**Analyzed:** 2026-05-02T01:40:32.793238+00:00
+**Analyzed:** 2026-05-04T02:04:36.753301+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found. Redis modules used: redisai, redistimeseries.
+Redis integration detected but uses Valkey-incompatible module(s): redisai. Redis dependencies: redis. 1 related issue(s)/PR(s) found (1 positive). Redis modules used: redisai.
 
 ## Integration Details
 
 - **Client Libraries:** redis
-- **Use Cases:** cache, time_series
+- **Use Cases:** cache
 - **Integration Type:** native
-- **Redis Modules:** redisai, redistimeseries
+- **Redis Modules:** redisai
 
 ## Phase 1: Dependency Scan
 
@@ -37,19 +37,10 @@ Manifests checked: package.json
 
 ## Phase 3: Code Search
 
-**Valkey code references:**
-- `valkey`: 3 file(s)
-  - [docs/railway-seed-consolidation-runbook.md](https://github.com/koala73/worldmonitor/blob/6d1931fb0391cfa95d6aba78f845723947e9469c/docs/railway-seed-consolidation-runbook.md)
-  - [scripts/evaluate-forecast-run.mjs](https://github.com/koala73/worldmonitor/blob/6d1931fb0391cfa95d6aba78f845723947e9469c/scripts/evaluate-forecast-run.mjs)
-  - [tests/energy-variant-atlas-guard.test.mts](https://github.com/koala73/worldmonitor/blob/6d1931fb0391cfa95d6aba78f845723947e9469c/tests/energy-variant-atlas-guard.test.mts)
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 8 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #1966](https://github.com/koala73/worldmonitor/pull/1966): fix(consumer-prices): restore seed script + fix publish job writing to wrong Redis (closed)
+- ✅ [PR #1966](https://github.com/koala73/worldmonitor/pull/1966): fix(consumer-prices): restore seed script + fix publish job writing to wrong Redis (closed)
 
 ## Phase 5: Ecosystem
 

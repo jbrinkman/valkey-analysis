@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: langchain-ai/langgraph
 
 **GitHub:** https://github.com/langchain-ai/langgraph
-**Analyzed:** 2026-05-02T01:40:32.797637+00:00
+**Analyzed:** 2026-05-04T02:04:35.871567+00:00
 
 ## Classification
 
@@ -14,14 +14,14 @@
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found. 5 related extension repo(s) found (0 mention Valkey). Redis modules used: redistimeseries.
+Explicit Valkey support detected. 1 related issue(s)/PR(s) found (1 negative). 5 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** extension
-- **Redis Modules:** redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -36,13 +36,10 @@ Manifests checked: None found
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 3 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [ISSUE #6987](https://github.com/langchain-ai/langgraph/issues/6987): LangGraph API 0.7.60: Redis TLS cluster PubSub fails with port 0 (go-redis v9.18.0 regression) (open)
+- ⛔ [ISSUE #6987](https://github.com/langchain-ai/langgraph/issues/6987): LangGraph API 0.7.60: Redis TLS cluster PubSub fails with port 0 (go-redis v9.18.0 regression) (open)
 
 ## Phase 5: Ecosystem
 

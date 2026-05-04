@@ -1,20 +1,20 @@
 # Valkey Integration Analysis: xinnan-tech/xiaozhi-esp32-server
 
 **GitHub:** https://github.com/xinnan-tech/xiaozhi-esp32-server
-**Analyzed:** 2026-05-02T01:40:32.890290+00:00
+**Analyzed:** 2026-05-04T02:04:36.728277+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 2 related issue(s)/PR(s) found. Redis modules used: redisjson.
+No Valkey or Redis integration detected. 2 related issue(s)/PR(s) found (2 positive). Redis modules used: redisjson.
 
 ## Integration Details
 
@@ -34,8 +34,8 @@ Manifests checked: None found
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [ISSUE #2720](https://github.com/xinnan-tech/xiaozhi-esp32-server/issues/2720): [Bug] ragflow解析文件时报错 (open)
-- [PR #2390](https://github.com/xinnan-tech/xiaozhi-esp32-server/pull/2390): build(deps): bump mem0ai from 0.1.62 to 1.0.0 in /main/xiaozhi-server (closed)
+- ✅ [ISSUE #2720](https://github.com/xinnan-tech/xiaozhi-esp32-server/issues/2720): [Bug] ragflow解析文件时报错 (open)
+- ✅ [PR #2390](https://github.com/xinnan-tech/xiaozhi-esp32-server/pull/2390): build(deps): bump mem0ai from 0.1.62 to 1.0.0 in /main/xiaozhi-server (closed)
 
 ## Phase 5: Ecosystem
 

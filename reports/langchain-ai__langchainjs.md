@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: langchain-ai/langchainjs
 
 **GitHub:** https://github.com/langchain-ai/langchainjs
-**Analyzed:** 2026-05-02T01:40:32.797402+00:00
+**Analyzed:** 2026-05-04T02:04:35.819062+00:00
 
 ## Classification
 
@@ -14,14 +14,14 @@
 
 ## Summary
 
-Explicit Valkey support detected. 1 related issue(s)/PR(s) found. 5 related extension repo(s) found (0 mention Valkey). Redis modules used: redisearch, redisgraph, redistimeseries.
+Explicit Valkey support detected. 1 related issue(s)/PR(s) found (1 positive). 5 related extension repo(s) found (0 mention Valkey). Redis modules used: redisearch.
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series, vector_store
+- **Use Cases:** vector_store
 - **Integration Type:** extension
-- **Redis Modules:** redisearch, redisgraph, redistimeseries
+- **Redis Modules:** redisearch
 
 ## Phase 1: Dependency Scan
 
@@ -36,15 +36,10 @@ Manifests checked: package.json
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redisearch` / `ft.search`: 3 file(s)
-- `redistimeseries` / `ts.add`: 1 file(s)
-- `redisgraph` / `graph.query`: 3 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [PR #9915](https://github.com/langchain-ai/langchainjs/pull/9915): Valkey vector store provider (open)
+- ✅ [PR #9915](https://github.com/langchain-ai/langchainjs/pull/9915): Valkey vector store provider (open)
 
 ## Phase 5: Ecosystem
 

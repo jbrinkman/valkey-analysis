@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: iOfficeAI/AionUi
 
 **GitHub:** https://github.com/iOfficeAI/AionUi
-**Analyzed:** 2026-05-02T01:40:32.781164+00:00
+**Analyzed:** 2026-05-04T02:04:37.052953+00:00
 
 ## Classification
 
@@ -14,14 +14,14 @@
 
 ## Summary
 
-Explicit Valkey support detected. Redis modules used: redistimeseries.
+Explicit Valkey support detected.
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** none
-- **Redis Modules:** redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -30,15 +30,6 @@ Manifests checked: package.json
 ## Phase 2: Documentation Scan
 
 ## Phase 3: Code Search
-
-**Valkey code references:**
-- `valkey`: 8 file(s)
-  - [src/common/chat/approval/index.ts](https://github.com/iOfficeAI/AionUi/blob/d67f4b29f17f28c1f6224c6b23ba6721b70f0f7a/src/common/chat/approval/index.ts)
-  - [src/process/agent/acp/ApprovalStore.ts](https://github.com/iOfficeAI/AionUi/blob/d67f4b29f17f28c1f6224c6b23ba6721b70f0f7a/src/process/agent/acp/ApprovalStore.ts)
-  - [src/process/agent/gemini/GeminiApprovalStore.ts](https://github.com/iOfficeAI/AionUi/blob/d67f4b29f17f28c1f6224c6b23ba6721b70f0f7a/src/process/agent/gemini/GeminiApprovalStore.ts)
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 6 file(s)
 
 ## Phase 4: Community Signals
 

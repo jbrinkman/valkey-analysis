@@ -1,27 +1,27 @@
 # Valkey Integration Analysis: elizaOS/eliza
 
 **GitHub:** https://github.com/elizaOS/eliza
-**Analyzed:** 2026-05-02T01:40:32.751028+00:00
+**Analyzed:** 2026-05-04T02:04:36.065176+00:00
 
 ## Classification
 
 | Field | Value |
 |-------|-------|
-| Valkey Support | **explicit** |
+| Valkey Support | **none** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
 | RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 1 related extension repo(s) found (0 mention Valkey). Redis modules used: redistimeseries.
+No Valkey or Redis integration detected. 1 related extension repo(s) found (0 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** None detected
-- **Use Cases:** time_series
+- **Use Cases:** None detected
 - **Integration Type:** none
-- **Redis Modules:** redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -30,13 +30,6 @@ Manifests checked: package.json
 ## Phase 2: Documentation Scan
 
 ## Phase 3: Code Search
-
-**Valkey code references:**
-- `valkey`: 1 file(s)
-  - [apps/app-lifeops/src/lifeops/engine.ts](https://github.com/elizaOS/eliza/blob/c3c002591b13b3626542f86fac5dd74fc5d857a3/apps/app-lifeops/src/lifeops/engine.ts)
-
-**Redis module code references:**
-- `redistimeseries` / `ts.add`: 47 file(s)
 
 ## Phase 4: Community Signals
 

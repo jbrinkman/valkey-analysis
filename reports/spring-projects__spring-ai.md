@@ -1,7 +1,7 @@
 # Valkey Integration Analysis: spring-projects/spring-ai
 
 **GitHub:** https://github.com/spring-projects/spring-ai
-**Analyzed:** 2026-05-02T01:40:32.855851+00:00
+**Analyzed:** 2026-05-04T02:04:35.978346+00:00
 
 ## Classification
 
@@ -10,18 +10,18 @@
 | Valkey Support | **explicit** |
 | Valkey-Search Support | **none** |
 | Valkey-Glide Used | False |
-| RediSearch Usage | True |
+| RediSearch Usage | False |
 
 ## Summary
 
-Explicit Valkey support detected. 3 related issue(s)/PR(s) found. 3 related extension repo(s) found (1 mention Valkey). Redis modules used: redisearch, redisjson, redistimeseries.
+Explicit Valkey support detected. 3 related issue(s)/PR(s) found (1 negative, 2 positive). 3 related extension repo(s) found (1 mention Valkey).
 
 ## Integration Details
 
 - **Client Libraries:** redis
-- **Use Cases:** time_series, vector_store
+- **Use Cases:** vector_store
 - **Integration Type:** extension
-- **Redis Modules:** redisearch, redisjson, redistimeseries
+- **Redis Modules:** None detected
 
 ## Phase 1: Dependency Scan
 
@@ -37,17 +37,12 @@ Manifests checked: pom.xml
 
 ## Phase 3: Code Search
 
-**Redis module code references:**
-- `redisearch` / `ft.search`: 1 file(s)
-- `redistimeseries` / `ts.add`: 32 file(s)
-- `redisjson` / `rejson`: 2 file(s)
-
 ## Phase 4: Community Signals
 
 **Issues/PRs:**
-- [ISSUE #5709](https://github.com/spring-projects/spring-ai/issues/5709): RedisVectorStore.similaritySearch() fails on AWS ElastiCache Valkey 8.x due to unsupported FT.SEARCH SORTBY clause (open)
-- [ISSUE #5215](https://github.com/spring-projects/spring-ai/issues/5215): Add Amazon ElastiCache / Valkey as a Vector Store (open)
-- [PR #5471](https://github.com/spring-projects/spring-ai/pull/5471): GH-5215: Add Valkey Vector Store module (open)
+- ⛔ [ISSUE #5709](https://github.com/spring-projects/spring-ai/issues/5709): RedisVectorStore.similaritySearch() fails on AWS ElastiCache Valkey 8.x due to unsupported FT.SEARCH SORTBY clause (open)
+- ✅ [ISSUE #5215](https://github.com/spring-projects/spring-ai/issues/5215): Add Amazon ElastiCache / Valkey as a Vector Store (open)
+- ✅ [PR #5471](https://github.com/spring-projects/spring-ai/pull/5471): GH-5215: Add Valkey Vector Store module (open)
 
 ## Phase 5: Ecosystem
 
