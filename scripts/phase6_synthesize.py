@@ -93,7 +93,7 @@ def is_negative_valkey_mention(title: str) -> bool:
     return any(p in title_lower for p in negative_patterns)
 
 
-async def collect_valkey_mentions(phases: dict) -> list[dict]:
+def collect_valkey_mentions(phases: dict) -> list[dict]:
     """Collect all Valkey mentions across phases with their context for sentiment analysis."""
     mentions = []
 
@@ -127,14 +127,17 @@ async def collect_valkey_mentions(phases: dict) -> list[dict]:
                 "source": "deepwiki",
             })
 
-    # Phase 4: issue/PR titles
+    # Phase 4: issue/PR titles (only those mentioning Valkey — others matched on body)
     p4 = phases.get("phase4", {})
     for ip in p4.get("issues_prs", []):
-        mentions.append({
-            "text": ip.get("title", ""),
-            "context": f"{ip.get('type', 'issue').upper()} #{ip.get('number', '')} ({ip.get('state', '')})",
-            "source": "issue_pr",
-        })
+        title = ip.get("title", "")
+        search_term = ip.get("search_term", "")
+        if "valkey" in title.lower():
+            mentions.append({
+                "text": title,
+                "context": f"{ip.get('type', 'issue').upper()} #{ip.get('number', '')} ({ip.get('state', '')}), search_term='{search_term}'",
+                "source": "issue_pr",
+            })
 
     # Phase 5: extension repo README mentions
     p5 = phases.get("phase5", {})
@@ -153,14 +156,22 @@ async def analyze_valkey_sentiment(client: httpx.AsyncClient, phases: dict) -> d
     """Run sentiment analysis on all Valkey mentions. Returns summary."""
     from sentiment import classify_mention
 
-    mentions = await collect_valkey_mentions(phases)
+    mentions = collect_valkey_mentions(phases)
     if not mentions:
         return {"positive": [], "negative": [], "neutral": [], "total": 0}
 
     results = {"positive": [], "negative": [], "neutral": [], "total": len(mentions)}
 
-    for mention in mentions:
-        sentiment = await classify_mention(client, mention["text"], mention["context"])
+    # Run classifications concurrently with a semaphore to limit parallelism
+    sentiment_sem = asyncio.Semaphore(5)
+
+    async def classify_with_limit(mention):
+        async with sentiment_sem:
+            return await classify_mention(client, mention["text"], mention["context"])
+
+    sentiments = await asyncio.gather(*(classify_with_limit(m) for m in mentions))
+
+    for mention, sentiment in zip(mentions, sentiments):
         entry = {**mention, "sentiment": sentiment["sentiment"], "reason": sentiment["reason"]}
         bucket = sentiment["sentiment"].lower()
         if bucket in results:
@@ -371,8 +382,8 @@ def build_evidence(phases: dict, sentiment_results: dict | None = None) -> dict:
         for bucket in ("positive", "negative", "neutral"):
             for m in sentiment_results.get(bucket, []):
                 if m.get("source") == "issue_pr":
-                    # Match by title text
-                    issue_sentiments[m["text"]] = {
+                    # Match by context which contains type and number
+                    issue_sentiments[m.get("context", "")] = {
                         "sentiment": bucket,
                         "reason": m.get("reason", ""),
                     }
@@ -380,11 +391,17 @@ def build_evidence(phases: dict, sentiment_results: dict | None = None) -> dict:
     issues_prs = []
     for ip in p4.get("issues_prs", []):
         tagged = dict(ip)
-        title = ip.get("title", "")
-        if title in issue_sentiments:
-            tagged["sentiment"] = issue_sentiments[title]["sentiment"]
-            tagged["sentiment_reason"] = issue_sentiments[title]["reason"]
-        else:
+        # Build a key matching the context format used in collect_valkey_mentions
+        ip_key = f"{ip.get('type', 'issue').upper()} #{ip.get('number', '')} ({ip.get('state', '')})"
+        # Check for exact context match, or partial match with search_term suffix
+        matched = False
+        for ctx_key, sent_data in issue_sentiments.items():
+            if ctx_key.startswith(ip_key):
+                tagged["sentiment"] = sent_data["sentiment"]
+                tagged["sentiment_reason"] = sent_data["reason"]
+                matched = True
+                break
+        if not matched:
             tagged["sentiment"] = "neutral"
             tagged["sentiment_reason"] = "No LLM analysis available"
         issues_prs.append(tagged)
@@ -410,18 +427,20 @@ def build_evidence(phases: dict, sentiment_results: dict | None = None) -> dict:
                     break
         community_extensions.append(ext_entry)
 
-    # Include full sentiment summary
+    # Include sentiment summary (counts + small sample to avoid bloating results.json)
     sentiment_summary = None
     if sentiment_results:
+        max_details = 5  # cap details to avoid bloating output
         sentiment_summary = {
             "total": sentiment_results["total"],
             "positive": len(sentiment_results["positive"]),
             "negative": len(sentiment_results["negative"]),
             "neutral": len(sentiment_results["neutral"]),
             "details": [
-                {**m, "text": m["text"][:200]} for bucket in ("positive", "negative", "neutral")
+                {"source": m["source"], "sentiment": m["sentiment"], "text": m["text"][:150], "reason": m.get("reason", "")}
+                for bucket in ("positive", "negative", "neutral")
                 for m in sentiment_results.get(bucket, [])
-            ],
+            ][:max_details],
         }
 
     return {
@@ -438,8 +457,7 @@ def build_evidence(phases: dict, sentiment_results: dict | None = None) -> dict:
 
 
 def build_evidence_summary(valkey_support: str, valkey_search_support: str,
-                           valkey_glide: bool, evidence: dict, phases: dict,
-                           sentiment_results: dict | None = None) -> str:
+                           valkey_glide: bool, evidence: dict, phases: dict) -> str:
     """Build a human-readable evidence summary."""
     parts = []
 
@@ -703,7 +721,7 @@ async def synthesize_repo(client: httpx.AsyncClient, repo_key: str, phases: dict
 
     # Build result
     evidence = build_evidence(phases, sentiment_results)
-    evidence_summary = build_evidence_summary(valkey_support, valkey_search_support, valkey_glide, evidence, phases, sentiment_results)
+    evidence_summary = build_evidence_summary(valkey_support, valkey_search_support, valkey_glide, evidence, phases)
 
     report_filename = f"{owner}__{repo_name}.md"
 

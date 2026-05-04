@@ -2,6 +2,7 @@
 
 import asyncio
 import base64
+import binascii
 import json
 import logging
 import sys
@@ -93,7 +94,7 @@ async def quick_scan_repo(client: httpx.AsyncClient, owner: str, repo_name: str)
 
     try:
         content = base64.b64decode(data["content"]).decode("utf-8", errors="replace")
-    except ValueError:
+    except (ValueError, binascii.Error):
         return result
 
     content_lower = content.lower()

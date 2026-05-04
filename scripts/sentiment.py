@@ -1,6 +1,5 @@
 """LLM-based sentiment analysis for Valkey mentions using OpenRouter."""
 
-import asyncio
 import json
 import logging
 
@@ -9,6 +8,8 @@ import httpx
 from config import OPENROUTER_API_KEY, OPENROUTER_BASE_URL, OPENROUTER_MODEL
 
 log = logging.getLogger(__name__)
+
+_warned_no_api_key = False
 
 SYSTEM_PROMPT = """You are analyzing text from open-source project documentation, issues, and code to determine the project's level of Valkey support.
 
@@ -46,7 +47,10 @@ async def classify_mention(client: httpx.AsyncClient, text: str, context: str = 
         {"sentiment": "POSITIVE|NEGATIVE|NEUTRAL", "reason": "..."}
     """
     if not OPENROUTER_API_KEY:
-        log.warning("OPENROUTER_API_KEY not set, falling back to keyword-based sentiment")
+        global _warned_no_api_key
+        if not _warned_no_api_key:
+            log.warning("OPENROUTER_API_KEY not set, falling back to keyword-based sentiment")
+            _warned_no_api_key = True
         return _keyword_fallback(text)
 
     user_msg = f"Context: {context}\n\nText to classify:\n{text[:1500]}"
