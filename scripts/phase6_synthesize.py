@@ -93,70 +93,132 @@ def is_negative_valkey_mention(title: str) -> bool:
     return any(p in title_lower for p in negative_patterns)
 
 
-def get_positive_valkey_issues(phases: dict) -> list[dict]:
-    """Filter issues/PRs to only those that are positive Valkey signals."""
+def collect_valkey_mentions(phases: dict) -> list[dict]:
+    """Collect all Valkey mentions across phases with their context for sentiment analysis."""
+    mentions = []
+
+    # Phase 2: README mentions
+    p2 = phases.get("phase2", {})
+    for m in p2.get("valkey_mentions", []):
+        for ctx in m.get("contexts", []):
+            mentions.append({
+                "text": ctx.get("text", ""),
+                "context": f"README keyword '{m['keyword']}' match",
+                "source": "readme",
+            })
+
+    # Phase 2: docs site mentions
+    for doc in p2.get("docs_valkey_mentions", []):
+        for m in doc.get("matches", []):
+            for ctx in m.get("contexts", []):
+                mentions.append({
+                    "text": ctx.get("text", ""),
+                    "context": f"Docs site {doc.get('url', '')} keyword '{m['keyword']}' match",
+                    "source": "docs",
+                })
+
+    # Phase 2b: DeepWiki mentions
+    p2b = phases.get("phase2b", {})
+    for m in p2b.get("valkey_mentions", []):
+        for ctx in m.get("contexts", []):
+            mentions.append({
+                "text": ctx.get("text", ""),
+                "context": f"DeepWiki keyword '{m['keyword']}' match",
+                "source": "deepwiki",
+            })
+
+    # Phase 4: issue/PR titles (only those mentioning Valkey — others matched on body)
     p4 = phases.get("phase4", {})
-    positive = []
     for ip in p4.get("issues_prs", []):
-        if not is_negative_valkey_mention(ip.get("title", "")):
-            positive.append(ip)
-    return positive
+        title = ip.get("title", "")
+        search_term = ip.get("search_term", "")
+        if "valkey" in title.lower():
+            mentions.append({
+                "text": title,
+                "context": f"{ip.get('type', 'issue').upper()} #{ip.get('number', '')} ({ip.get('state', '')}), search_term='{search_term}'",
+                "source": "issue_pr",
+            })
+
+    # Phase 5: extension repo README mentions
+    p5 = phases.get("phase5", {})
+    for ext in p5.get("related_repos", []):
+        if ext.get("valkey_mentioned"):
+            mentions.append({
+                "text": ext.get("details", f"Extension repo {ext.get('repo_name', '')} mentions Valkey"),
+                "context": f"Extension repo {ext.get('url', '')}",
+                "source": "extension",
+            })
+
+    return mentions
 
 
-def classify_valkey_support(phases: dict) -> str:
+async def analyze_valkey_sentiment(client: httpx.AsyncClient, phases: dict) -> dict:
+    """Run sentiment analysis on all Valkey mentions. Returns summary."""
+    from sentiment import classify_mention
+
+    mentions = collect_valkey_mentions(phases)
+    if not mentions:
+        return {"positive": [], "negative": [], "neutral": [], "total": 0}
+
+    results = {"positive": [], "negative": [], "neutral": [], "total": len(mentions)}
+
+    # Run classifications concurrently with a semaphore to limit parallelism
+    sentiment_sem = asyncio.Semaphore(5)
+
+    async def classify_with_limit(mention):
+        async with sentiment_sem:
+            return await classify_mention(client, mention["text"], mention["context"])
+
+    sentiments = await asyncio.gather(*(classify_with_limit(m) for m in mentions))
+
+    for mention, sentiment in zip(mentions, sentiments):
+        entry = {**mention, "sentiment": sentiment["sentiment"], "reason": sentiment["reason"]}
+        bucket = sentiment["sentiment"].lower()
+        if bucket in results:
+            results[bucket].append(entry)
+        else:
+            results["neutral"].append(entry)
+
+    return results
+
+
+def classify_valkey_support(phases: dict, sentiment_results: dict | None = None) -> str:
     """Classify valkey_support as explicit, implied, or none.
 
-    Classification hierarchy:
-    1. Hard signals (Valkey deps, Valkey code) → explicit
-    2. Incompatible module check → can disqualify to none
-    3. Soft signals (docs, issues, extensions) → explicit only if no disqualifiers
-    4. Redis signals → implied only if no incompatible modules
-    5. Default → none
+    Uses LLM sentiment analysis results when available to determine
+    whether Valkey mentions are actually positive signals.
     """
     p1 = phases.get("phase1", {})
-    p2 = phases.get("phase2", {})
-    p2b = phases.get("phase2b", {})
     p3 = phases.get("phase3", {})
-    p4 = phases.get("phase4", {})
     p5 = phases.get("phase5", {})
 
-    # Check for incompatible modules upfront — affects both explicit and implied
+    # Check for incompatible modules upfront
     modules_used = detect_redis_modules(phases)
     incompatible = [m for m in modules_used if m in VALKEY_INCOMPATIBLE_MODULES]
 
     # Hard explicit: Valkey dependency in package manifest
-    # This is the strongest signal — the project has deliberately added Valkey
     if p1.get("valkey_deps"):
         return "explicit"
 
-    # Soft explicit: docs, code references, extensions mention Valkey
-    # These can be false positives, so incompatible modules disqualify
+    # Soft signals below — incompatible modules disqualify
     if incompatible:
         return "none"
 
-    # Code references: require multiple files to reduce false positives
-    # from incidental mentions in comments, docs, or unrelated code
+    # Code references: require multiple files
     if p3.get("has_valkey_code") and p3.get("valkey_total_files", 0) >= 3:
         return "explicit"
 
-    if p2.get("has_valkey_signal"):
-        valkey_mentions = p2.get("valkey_mentions", [])
-        if valkey_mentions:
+    # LLM sentiment-based classification
+    if sentiment_results and sentiment_results.get("positive"):
+        # Only count as explicit if there are genuinely positive mentions
+        positive_sources = {m["source"] for m in sentiment_results["positive"]}
+        # Strong positive: code-adjacent sources (readme, docs, extension)
+        if positive_sources & {"readme", "docs", "extension"}:
             return "explicit"
-    if p2.get("docs_valkey_mentions"):
-        return "explicit"
-    if p2b.get("has_valkey_signal"):
-        return "explicit"
-
-    # Issues/PRs: informational only — not sufficient to trigger explicit
-    # They often contain bug reports, "not supported" complaints, or tangential mentions
-    # The report will still include them as evidence for human review
-
-    if p5.get("has_valkey_extension"):
-        return "explicit"
 
     # Implied: Redis dependency with compatible use case
-    # DeepWiki alone is not sufficient — requires corroboration from deps or docs
+    p2 = phases.get("phase2", {})
+    p2b = phases.get("phase2b", {})
     has_strong_redis_signal = p1.get("redis_deps") or p2.get("has_redis_signal") or p5.get("has_redis_extension")
     has_deepwiki_redis = p2b.get("has_redis_signal")
     if has_strong_redis_signal or (has_deepwiki_redis and (p1.get("redis_deps") or p2.get("has_redis_signal"))):
@@ -299,7 +361,7 @@ def infer_integration_type(phases: dict) -> str:
     return "none"
 
 
-def build_evidence(phases: dict) -> dict:
+def build_evidence(phases: dict, sentiment_results: dict | None = None) -> dict:
     """Build the evidence object from all phase data."""
     p1 = phases.get("phase1", {})
     p2 = phases.get("phase2", {})
@@ -314,28 +376,72 @@ def build_evidence(phases: dict) -> dict:
     doc_mentions = p2.get("has_valkey_signal", False) or p2.get("has_redis_signal", False)
     readme_mentions = bool(p2.get("valkey_mentions") or p2.get("redis_mentions"))
 
+    # Tag issues/PRs with LLM sentiment if available, else use source-based heuristic
+    issue_sentiments = {}
+    if sentiment_results:
+        for bucket in ("positive", "negative", "neutral"):
+            for m in sentiment_results.get(bucket, []):
+                if m.get("source") == "issue_pr":
+                    # Match by context which contains type and number
+                    issue_sentiments[m.get("context", "")] = {
+                        "sentiment": bucket,
+                        "reason": m.get("reason", ""),
+                    }
+
     issues_prs = []
     for ip in p4.get("issues_prs", []):
         tagged = dict(ip)
-        if is_negative_valkey_mention(ip.get("title", "")):
-            tagged["sentiment"] = "negative"
-        elif ip.get("type") == "issue" and ip.get("state") == "closed":
-            # Closed issue without a corresponding PR — likely rejected/won't fix
-            tagged["sentiment"] = "inconclusive"
-        else:
-            tagged["sentiment"] = "positive"
+        # Build a key matching the context format used in collect_valkey_mentions
+        ip_key = f"{ip.get('type', 'issue').upper()} #{ip.get('number', '')} ({ip.get('state', '')})"
+        # Check for exact context match, or partial match with search_term suffix
+        matched = False
+        for ctx_key, sent_data in issue_sentiments.items():
+            if ctx_key.startswith(ip_key):
+                tagged["sentiment"] = sent_data["sentiment"]
+                tagged["sentiment_reason"] = sent_data["reason"]
+                matched = True
+                break
+        if not matched:
+            tagged["sentiment"] = "neutral"
+            tagged["sentiment_reason"] = "No LLM analysis available"
         issues_prs.append(tagged)
+
     discussions = p4.get("discussions", [])
     wiki_mentions = p4.get("has_valkey_wiki", False)
 
     community_extensions = []
     for ext in p5.get("related_repos", []):
-        community_extensions.append({
+        ext_entry = {
             "repo_url": ext.get("url", ""),
             "description": ext.get("description", ""),
             "valkey_mentioned": ext.get("valkey_mentioned", False),
             "redis_mentioned": ext.get("redis_mentioned", False),
-        })
+        }
+        # Add LLM sentiment for extension mentions
+        if sentiment_results and ext.get("valkey_mentioned"):
+            ext_url = ext.get("url", "")
+            for m in sentiment_results.get("positive", []) + sentiment_results.get("negative", []) + sentiment_results.get("neutral", []):
+                if m.get("source") == "extension" and ext_url in m.get("context", ""):
+                    ext_entry["sentiment"] = m["sentiment"]
+                    ext_entry["sentiment_reason"] = m.get("reason", "")
+                    break
+        community_extensions.append(ext_entry)
+
+    # Include sentiment summary (counts + small sample to avoid bloating results.json)
+    sentiment_summary = None
+    if sentiment_results:
+        max_details = 5  # cap details to avoid bloating output
+        sentiment_summary = {
+            "total": sentiment_results["total"],
+            "positive": len(sentiment_results["positive"]),
+            "negative": len(sentiment_results["negative"]),
+            "neutral": len(sentiment_results["neutral"]),
+            "details": [
+                {"source": m["source"], "sentiment": m["sentiment"], "text": m["text"][:150], "reason": m.get("reason", "")}
+                for bucket in ("positive", "negative", "neutral")
+                for m in sentiment_results.get(bucket, [])
+            ][:max_details],
+        }
 
     return {
         "dependencies": deps,
@@ -346,6 +452,7 @@ def build_evidence(phases: dict) -> dict:
         "discussions": discussions,
         "wiki_mentions": wiki_mentions,
         "community_extensions": community_extensions,
+        "sentiment_analysis": sentiment_summary,
     }
 
 
@@ -388,15 +495,15 @@ def build_evidence_summary(valkey_support: str, valkey_search_support: str,
     if evidence["issues_prs"]:
         total = len(evidence["issues_prs"])
         negative = sum(1 for ip in evidence["issues_prs"] if ip.get("sentiment") == "negative")
-        inconclusive = sum(1 for ip in evidence["issues_prs"] if ip.get("sentiment") == "inconclusive")
-        positive = total - negative - inconclusive
+        neutral = sum(1 for ip in evidence["issues_prs"] if ip.get("sentiment") == "neutral")
+        positive = sum(1 for ip in evidence["issues_prs"] if ip.get("sentiment") == "positive")
         qualifiers = []
-        if negative:
-            qualifiers.append(f"{negative} negative")
-        if inconclusive:
-            qualifiers.append(f"{inconclusive} inconclusive")
         if positive:
             qualifiers.append(f"{positive} positive")
+        if negative:
+            qualifiers.append(f"{negative} negative")
+        if neutral:
+            qualifiers.append(f"{neutral} neutral")
         parts.append(f"{total} related issue(s)/PR(s) found ({', '.join(qualifiers)}).")
 
     if evidence["discussions"]:
@@ -513,10 +620,11 @@ def generate_markdown_report(repo_key: str, result: dict, phases: dict, deepwiki
     lines.extend(["## Phase 4: Community Signals", ""])
     if result.get("evidence", {}).get("issues_prs"):
         lines.append("**Issues/PRs:**")
-        sentiment_icons = {"negative": "⛔", "inconclusive": "❓", "positive": "✅"}
+        sentiment_icons = {"negative": "⛔", "neutral": "➖", "positive": "✅"}
         for ip in result["evidence"]["issues_prs"]:
-            icon = sentiment_icons.get(ip.get("sentiment", ""), "")
-            lines.append(f"- {icon} [{ip['type'].upper()} #{ip['number']}]({ip['url']}): {ip['title']} ({ip['state']})")
+            icon = sentiment_icons.get(ip.get("sentiment", ""), "➖")
+            reason = f" — _{ip['sentiment_reason']}_" if ip.get("sentiment_reason") else ""
+            lines.append(f"- {icon} [{ip['type'].upper()} #{ip['number']}]({ip['url']}): {ip['title']} ({ip['state']}){reason}")
         lines.append("")
     if p4.get("discussions"):
         lines.append("**Discussions:**")
@@ -541,6 +649,26 @@ def generate_markdown_report(repo_key: str, result: dict, phases: dict, deepwiki
         lines.append("")
     else:
         lines.append("No related extension repos found in the org.")
+        lines.append("")
+
+    # Sentiment Analysis
+    sa = result.get("evidence", {}).get("sentiment_analysis")
+    if sa and sa["total"] > 0:
+        lines.extend([
+            "## Sentiment Analysis",
+            "",
+            f"**{sa['total']} Valkey mention(s) analyzed:** {sa['positive']} positive, {sa['negative']} negative, {sa['neutral']} neutral",
+            "",
+        ])
+        sentiment_icons = {"positive": "✅", "negative": "⛔", "neutral": "➖"}
+        for detail in sa.get("details", []):
+            icon = sentiment_icons.get(detail.get("sentiment", ""), "")
+            source = detail.get("source", "")
+            reason = detail.get("reason", "")
+            text = detail.get("text", "")[:150]
+            lines.append(f"- {icon} **[{source}]** \"{text}\"")
+            if reason:
+                lines.append(f"    - Reason: {reason}")
         lines.append("")
 
     # DeepWiki
@@ -582,14 +710,17 @@ async def synthesize_repo(client: httpx.AsyncClient, repo_key: str, phases: dict
     # DeepWiki data is now collected in Phase 2b — check if it was available
     deepwiki_available = phases.get("phase2b", {}).get("deepwiki_available", False)
 
-    # Classify
-    valkey_support = classify_valkey_support(phases)
+    # Run LLM sentiment analysis on all Valkey mentions
+    sentiment_results = await analyze_valkey_sentiment(client, phases)
+
+    # Classify using sentiment results
+    valkey_support = classify_valkey_support(phases, sentiment_results)
     valkey_search_support = classify_valkey_search_support(phases)
     valkey_glide = detect_valkey_glide(phases)
     redisearch = detect_redisearch_usage(phases)
 
     # Build result
-    evidence = build_evidence(phases)
+    evidence = build_evidence(phases, sentiment_results)
     evidence_summary = build_evidence_summary(valkey_support, valkey_search_support, valkey_glide, evidence, phases)
 
     report_filename = f"{owner}__{repo_name}.md"
