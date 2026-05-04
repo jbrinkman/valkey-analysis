@@ -197,4 +197,4 @@ DEEPWIKI_BASE_URL = "https://deepwiki.com"
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-OPENROUTER_MODEL = "google/gemma-4-26b-a4b-it"
+OPENROUTER_MODEL = "google/gemma-4-31b-it"
