@@ -93,7 +93,7 @@ async def quick_scan_repo(client: httpx.AsyncClient, owner: str, repo_name: str)
 
     try:
         content = base64.b64decode(data["content"]).decode("utf-8", errors="replace")
-    except Exception:
+    except ValueError:
         return result
 
     content_lower = content.lower()
@@ -104,9 +104,12 @@ async def quick_scan_repo(client: httpx.AsyncClient, owner: str, repo_name: str)
             result["valkey_mentioned"] = True
             # Capture context lines around the mention
             context_lines = []
+            kw_lower = kw.lower()
             for i, line in enumerate(lines):
-                if kw.lower() in line.lower():
-                    context_lines.append(line.strip()[:200])
+                if kw_lower in line.lower():
+                    start = max(0, i - 1)
+                    end = min(len(lines), i + 2)
+                    context_lines.extend(l.strip()[:200] for l in lines[start:end])
                     if len(context_lines) >= 3:
                         break
             result["details"] = " | ".join(context_lines) if context_lines else f"README mentions '{kw}'."

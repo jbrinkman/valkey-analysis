@@ -75,9 +75,12 @@ async def classify_mention(client: httpx.AsyncClient, text: str, context: str = 
         # Parse JSON response
         # Handle cases where LLM wraps in markdown code block
         if content.startswith("```"):
-            content = content.split("```")[1]
-            if content.startswith("json"):
-                content = content[4:]
+            parts = content.split("```")
+            if len(parts) >= 2:
+                inner = parts[1]
+                if inner.startswith("json"):
+                    inner = inner[4:]
+                content = inner.strip()
         result = json.loads(content)
         sentiment = result.get("sentiment", "NEUTRAL").upper()
         if sentiment not in ("POSITIVE", "NEGATIVE", "NEUTRAL"):
@@ -123,7 +126,8 @@ def _keyword_fallback(text: str) -> dict:
         "valkey support", "supports valkey", "valkey integration",
         "valkey backend", "valkey driver", "valkey client",
         "add valkey", "added valkey", "valkey adapter",
-        "import valkey", "from valkey", "require.*valkey",
+        "import valkey", "from valkey", "require valkey",
+        "require('valkey')", 'require("valkey")',
     ]
 
     for p in negative_patterns:

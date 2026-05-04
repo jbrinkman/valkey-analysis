@@ -402,8 +402,9 @@ def build_evidence(phases: dict, sentiment_results: dict | None = None) -> dict:
         }
         # Add LLM sentiment for extension mentions
         if sentiment_results and ext.get("valkey_mentioned"):
+            ext_url = ext.get("url", "")
             for m in sentiment_results.get("positive", []) + sentiment_results.get("negative", []) + sentiment_results.get("neutral", []):
-                if m.get("source") == "extension":
+                if m.get("source") == "extension" and ext_url in m.get("context", ""):
                     ext_entry["sentiment"] = m["sentiment"]
                     ext_entry["sentiment_reason"] = m.get("reason", "")
                     break
@@ -649,7 +650,7 @@ def generate_markdown_report(repo_key: str, result: dict, phases: dict, deepwiki
             text = detail.get("text", "")[:150]
             lines.append(f"- {icon} **[{source}]** \"{text}\"")
             if reason:
-                lines.append(f"  - Reason: {reason}")
+                lines.append(f"    - Reason: {reason}")
         lines.append("")
 
     # DeepWiki
